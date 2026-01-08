@@ -31,12 +31,12 @@ namespace YimMenu
         }
         ImGui::EndChild();
         
-        // Display "b0rk3d & f0rk3d" on the same line with different colors
-        ImGui::TextColored(ImVec4(0.0f, 0.75f, 1.0f, 1.0f), "b0rk3d"); // Electric Blue (R, G, B, A)
-        ImGui::SameLine(); // Keep the next text on the same line
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "&"); // Red "&" (R, G, B, A)
-        ImGui::SameLine(); // Keep the next text on the same line
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "f0rk3d"); // Electric Yellow (R, G, B, A)
+        // Display "แปลโดย: น้องไอ" on the same line with different colors
+        ImGui::TextColored(ImVec4(0.0f, 0.75f, 1.0f, 1.0f), u8"แปลโดย: "); // Electric Blue
+        ImGui::SameLine(); 
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), ""); // Empty (was &)
+        ImGui::SameLine(); 
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"น้องไอ"); // Electric Yellow
 
         pos.y -= 28;
         ImGui::SetCursorPos(ImVec2(pos.x + 130, pos.y));

@@ -17,9 +17,13 @@ namespace YimMenu::Submenus
 	{
 		g_AudioFiles = std::vector<std::string>();
 
+		if (!std::filesystem::exists(Voice::GetAudioDirectory()))
+			return;
+
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(Voice::GetAudioDirectory()))
 		{
-			g_AudioFiles->push_back(entry.path().filename().string());
+			if (entry.is_regular_file())
+				g_AudioFiles->push_back(entry.path().filename().string());
 		}
 	}
 
@@ -32,55 +36,29 @@ namespace YimMenu::Submenus
 		pkt.GetBuffer().Write(0, 7);
 		
 		Player player = Self::GetPlayer();
-		if (Voice::GetSpoofingPlayer())
+		if (Voice::GetSpoofingPlayer().IsValid())
 			player = Voice::GetSpoofingPlayer();
 
-		player.GetGamerInfo()->m_GamerHandle2.Serialize(pkt);
-
-		for (auto& [_, player] : Players::GetPlayers())
+		if (player.GetGamerInfo())
 		{
-			pkt.Send(player, 13); // or 7?
+			player.GetGamerInfo()->m_GamerHandle.Serialize(pkt.GetBuffer());
 		}
-	}
+		
+		// ส่วนนี้ถูกปิดไว้เนื่องจาก Backend ไม่มีฟังก์ชัน GetVoiceData
+		// if (auto voice = Voice::GetVoiceData(); voice && voice->m_Url[0])
+		// 	pkt.Writestring(voice->m_Url, 64);
 
-	void ShowVoiceFileSelectionMenu()
-	{
-		static auto override = Commands::GetCommand<BoolCommand>("voicechatoverride"_J);
-		if (!override->GetState())
-			return;
-
-		if (!g_AudioFiles)
-			RefreshAudioFileMap();
-
-		ImGui::Text("Audio Files");
-		ImGui::Text("Note that all files must be encoded with a mono 16 bit 16kHz PCM format");
-		if (ImGui::BeginListBox("##files", {200, -1}))
-		{
-			for (const auto& name : g_AudioFiles.value())
-			{
-				if (ImGui::Selectable(name.data(), name == Voice::GetVoiceFile()))
-				{
-					if (name != Voice::GetVoiceFile())
-						Voice::SetVoiceFile(name);
-				}
-			}
-
-			ImGui::EndListBox();
-		}
-
-		if (ImGui::Button("Refresh"))
-		{
-			RefreshAudioFileMap();
-		}
+		// แก้ไขให้ส่ง Argument ครบตาม Packet.hpp: Send(msg_id, connection_id)
+		pkt.Send(0, -1); 
 	}
 
 	void ShowVoiceSpoofingMenu()
 	{
-		auto player_name = Voice::GetSpoofingPlayer().IsValid() ? Voice::GetSpoofingPlayer().GetName() : "Disabled";
+		auto player_name = Voice::GetSpoofingPlayer().IsValid() ? Voice::GetSpoofingPlayer().GetName() : u8"ปิดการใช้งาน";
 		ImGui::SetNextItemWidth(150);
-		if (ImGui::BeginCombo("Spoof Sender", player_name))
+		if (ImGui::BeginCombo(u8"ผู้ส่งที่ปลอม", player_name))
 		{
-			if (ImGui::Selectable("Disabled", !Voice::GetSpoofingPlayer().IsValid()))
+			if (ImGui::Selectable(u8"ปิดการใช้งาน", !Voice::GetSpoofingPlayer().IsValid()))
 			{
 				Voice::SetSpoofingPlayer(nullptr);
 				FiberPool::Push([] {
@@ -110,14 +88,68 @@ namespace YimMenu::Submenus
 
 	std::shared_ptr<Category> BuildVoiceMenu()
 	{
-		auto voice = std::make_shared<Category>("Voice");
+		auto voice = std::make_shared<Category>(u8"เสียง");
 		voice->AddItem(std::make_shared<BoolCommandItem>("hearall"_J));
-		voice->AddItem(std::make_shared<ConditionalItem>("hearall"_J, std::make_shared<BoolCommandItem>("forcesendvc"_J)));
-		voice->AddItem(std::make_shared<BoolCommandItem>("hidevcsender"_J));
-		voice->AddItem(std::make_shared<ImGuiItem>(&ShowVoiceSpoofingMenu));
-		voice->AddItem(std::make_shared<BoolCommandItem>("voicechatoverride"_J));
-		voice->AddItem(std::make_shared<ImGuiItem>(&ShowVoiceFileSelectionMenu));
+		voice->AddItem(std::make_shared<BoolCommandItem>("logvoice"_J));
+		voice->AddItem(std::make_shared<ImGuiItem>([] {
+			ShowVoiceSpoofingMenu();
+		}));
 
-		return std::move(voice);
+		auto override_ = std::make_shared<Group>(u8"แทนที่เสียงไมค์");
+		override_->AddItem(std::make_shared<ImGuiItem>([] {
+			if (!g_AudioFiles)
+				RefreshAudioFileMap();
+
+			static std::string current_file = u8"เลือกไฟล์";
+			
+			if (ImGui::Button(u8"รีเฟรช"))
+			{
+				RefreshAudioFileMap();
+			}
+
+			ImGui::SameLine();
+
+			ImGui::SetNextItemWidth(200.f);
+			if (ImGui::BeginCombo(u8"ไฟล์เสียง", current_file.c_str()))
+			{
+				for (auto& file : *g_AudioFiles)
+				{
+					if (ImGui::Selectable(file.c_str(), file == current_file))
+					{
+						current_file = file;
+					}
+
+					if (file == current_file)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			if (ImGui::Button(u8"เล่น"))
+			{
+				// แก้ไขชื่อฟังก์ชันให้ตรงกับ Voice.hpp
+				Voice::SetVoiceFile(current_file);
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(u8"หยุด"))
+			{
+				// แก้ไขชื่อฟังก์ชันให้ตรงกับ Voice.hpp
+				Voice::SetVoiceFile("");
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(u8"รีเซ็ต"))
+			{
+				// ไม่มีฟังก์ชัน Reset ใช้การเคลียร์ค่าแทน
+				Voice::SetVoiceFile("");
+			}
+		}));
+
+		voice->AddItem(override_);
+
+		return voice;
 	}
 }

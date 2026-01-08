@@ -34,7 +34,7 @@ namespace YimMenu::Submenus
 			tags.push_back({"GOD", ImGui::Colors::Crimson});
 
 		if (player.GetPed() && !player.GetPed().IsVisible())
-			tags.push_back({"INVIS", ImGui::Colors::MediumPurple});
+			tags.push_back({u8"ล่องหน", ImGui::Colors::MediumPurple});
 
 		return tags;
 	}
@@ -59,9 +59,9 @@ namespace YimMenu::Submenus
 			ImGui::SetNextWindowPos(
 			    ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x + offset, ImGui::GetWindowPos().y));
 			ImGui::SetNextWindowSize(ImVec2(215, ImGui::GetWindowSize().y));
-			ImGui::Begin("Player List", nullptr, ImGuiWindowFlags_NoDecoration);
+			ImGui::Begin(u8"รายชื่อผู้เล่น", nullptr, ImGuiWindowFlags_NoDecoration);
 
-			ImGui::Checkbox("Spectate", &YimMenu::g_Spectating);
+			ImGui::Checkbox(u8"ส่องดู", &YimMenu::g_Spectating);
 			for (auto& [id, player] : sortedPlayers)
 			{
 				std::string display_name = player.GetName();
@@ -100,7 +100,7 @@ namespace YimMenu::Submenus
 		}
 		else
 		{
-			if (ImGui::BeginCombo("Players", YimMenu::Players::GetSelected().GetName()))
+			if (ImGui::BeginCombo(u8"ผู้เล่น", YimMenu::Players::GetSelected().GetName()))
 			{
 				for (auto& [id, player] : sortedPlayers)
 				{

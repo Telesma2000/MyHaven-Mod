@@ -79,10 +79,10 @@ namespace YimMenu::Submenus
 		static bool dead, invis, godmode, freeze, companion, sedated;
 		static int formation;
 		static std::vector<YimMenu::Ped> spawnedPeds;
-		InputTextWithHint("##pedmodel", "Ped Model", &pedModelBuffer, ImGuiInputTextFlags_CallbackCompletion, nullptr, PedSpawnerInputCallback)
+		InputTextWithHint("##pedmodel", u8"ชื่อโมเดลคน", &pedModelBuffer, ImGuiInputTextFlags_CallbackCompletion, nullptr, PedSpawnerInputCallback)
 		    .Draw();
 		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Press Tab to auto fill");
+			ImGui::SetTooltip(u8"กด Tab เพื่อเติมคำอัตโนมัติ");
 		if (!pedModelBuffer.empty() && !IsPedModelInList(pedModelBuffer))
 		{
 			ImGui::BeginListBox("##pedmodels", ImVec2(250, 100));
@@ -102,15 +102,15 @@ namespace YimMenu::Submenus
 			ImGui::EndListBox();
 		}
 
-		ImGui::Checkbox("Spawn Dead", &dead);
-		ImGui::Checkbox("Sedated", &sedated);
-		ImGui::Checkbox("Invisible", &invis);
-		ImGui::Checkbox("GodMode", &godmode);
-		ImGui::Checkbox("Frozen", &freeze);
-		ImGui::Checkbox("Companion", &companion);
+		ImGui::Checkbox(u8"เสกแบบตาย", &dead);
+		ImGui::Checkbox(u8"ยาสลบ", &sedated);
+		ImGui::Checkbox(u8"ล่องหน", &invis);
+		ImGui::Checkbox(u8"อมตะ", &godmode);
+		ImGui::Checkbox(u8"แช่แข็ง", &freeze);
+		ImGui::Checkbox(u8"ผู้ติดตาม", &companion);
 		if (companion)
 		{
-			if (ImGui::BeginCombo("Formation", groupFormations[formation]))
+			if (ImGui::BeginCombo(u8"รูปแบบแถว", groupFormations[formation]))
 			{
 				for (const auto& [num, name] : groupFormations)
 				{
@@ -127,11 +127,11 @@ namespace YimMenu::Submenus
 				ImGui::EndCombo();
 			}
 			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("What formation should spawned companion use?");
+				ImGui::SetTooltip(u8"ผู้ติดตามควรจัดแถวแบบไหน?");
 		}
-		ImGui::SliderFloat("Scale", &scale, 0.1, 10);
+		ImGui::SliderFloat(u8"ขนาด", &scale, 0.1, 10);
 
-		if (ImGui::Button("Spawn"))
+		if (ImGui::Button(u8"เสก"))
 		{
 			FiberPool::Push([] {
 				auto ped = Ped::Create(Joaat(pedModelBuffer), Self::GetPed().GetPosition());
@@ -212,7 +212,7 @@ namespace YimMenu::Submenus
 			});
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Set Model"))
+		if (ImGui::Button(u8"เปลี่ยนร่างเป็นโมเดลนี้"))
 		{
 			FiberPool::Push([] {
 				auto model = Joaat(pedModelBuffer);
@@ -230,7 +230,7 @@ namespace YimMenu::Submenus
 			});
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Cleanup Peds"))
+		if (ImGui::Button(u8"ลบคนที่เสก"))
 		{
 			FiberPool::Push([] {
 				for (auto it = spawnedPeds.begin(); it != spawnedPeds.end();)

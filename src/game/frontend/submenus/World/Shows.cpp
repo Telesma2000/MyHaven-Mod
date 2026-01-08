@@ -77,20 +77,21 @@ namespace YimMenu::Submenus
 	    "show_nbx_bigband_02"_J,
 	});
 
+    // Translated Scene Names
 	constexpr auto g_SceneTypeStrs = std::to_array({
-	    "Cancan Dance (1)",
-	    "Cancan Dance (2)",
-	    "Fire Breather Dance",
-	    "Fire Dance (1)",
-	    "Fire Dance (2)",
-	    "Snake Dance (1)",
-	    "Snake Dance (2)",
-	    "Sword Dance",
-	    "Odd Fellows Scene",
-	    "Escape Artist Scene",
-	    "Flex Fight Scene",
-	    "Band (Telephone)",
-	    "Band (Saint Denis)",
+	    u8"ระบำแคนแคน (1)",
+	    u8"ระบำแคนแคน (2)",
+	    u8"ระบำพ่นไฟ",
+	    u8"ระบำไฟ (1)",
+	    u8"ระบำไฟ (2)",
+	    u8"ระบำงู (1)",
+	    u8"ระบำงู (2)",
+	    u8"ระบำดาบ",
+	    u8"คณะละครประหลาด",
+	    u8"กลหนีตาย",
+	    u8"โชว์เบ่งกล้าม",
+	    u8"วงดนตรี (Telephone)",
+	    u8"วงดนตรี (Saint Denis)",
 	});
 
 	constexpr auto g_SceneTypeInts = std::to_array({
@@ -472,7 +473,7 @@ namespace YimMenu::Submenus
 
 		auto ped = PED::CREATE_PED(ctx->GetArg<Hash>(0), ctx->GetArg<float>(1), ctx->GetArg<float>(2), ctx->GetArg<float>(3), ctx->GetArg<float>(4), ctx->GetArg<int>(5), ctx->GetArg<int>(6), ctx->GetArg<int>(7), ctx->GetArg<int>(8));
 		if (!ped)
-			Notifications::Show("Shows", "Failed to create actor, the show will not run! Use World > Clear All Peds if this issue persists or try changing sessions");
+			Notifications::Show("Shows", u8"ไม่สามารถสร้างนักแสดงได้ การแสดงจะไม่เริ่ม! โปรดใช้ World > ลบคน ทั้งหมด หากยังพบปัญหา หรือลองเปลี่ยนเซสชั่น");
 		g_ShowEntities.push_back(ped);
 		Ped(ped).SetInvincible(true);
 		ctx->SetReturnValue(std::move(ped));
@@ -525,9 +526,9 @@ namespace YimMenu::Submenus
 	{
 		ImGui::SetNextItemWidth(100);
 		if (*Pointers.IsSessionStarted)
-			ImGui::Combo(name.c_str(), (int*)&def.Type, "Default\0Yourself\0Player\0");
+			ImGui::Combo(name.c_str(), (int*)&def.Type, u8"ค่าเริ่มต้น\0ตัวคุณเอง\0ผู้เล่นอื่น\0");
 		else
-			ImGui::Combo(name.c_str(), (int*)&def.Type, "Default\0Yourself\0");
+			ImGui::Combo(name.c_str(), (int*)&def.Type, u8"ค่าเริ่มต้น\0ตัวคุณเอง\0");
 		if (def.Type == ActorOverrideType::PLAYER)
 		{
 			ImGui::SameLine();
@@ -618,16 +619,16 @@ namespace YimMenu::Submenus
 		})();
 
 		if (*Pointers.IsSessionStarted)
-			ImGui::Text("Warning: Modders might prevent themselves from being forced into shows");
+			ImGui::Text(u8"คำเตือน: Modder อาจป้องกันตัวเองจากการถูกบังคับให้ดูโชว์");
 
-		if (ImGui::Button("Teleport to Theater"))
+		if (ImGui::Button(u8"วาร์ปไปโรงละคร"))
 		{
 			FiberPool::Push([] {
 				Self::GetPed().SetPosition({2546.5646f, -1301.4119f, 48.3564f});
 			});
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Unlock Theater Door"))
+		if (ImGui::Button(u8"ปลดล็อคประตูโรงละคร"))
 		{
 			FiberPool::Push([] {
 				if (OBJECT::IS_DOOR_REGISTERED_WITH_SYSTEM(340151973))
@@ -637,7 +638,7 @@ namespace YimMenu::Submenus
 			});
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Lock Theater Door"))
+		if (ImGui::Button(u8"ล็อคประตูโรงละคร"))
 		{
 			FiberPool::Push([] {
 				if (OBJECT::IS_DOOR_REGISTERED_WITH_SYSTEM(340151973))
@@ -648,65 +649,65 @@ namespace YimMenu::Submenus
 		}
 
 		ImGui::SetNextItemWidth(200);
-		ImGui::Combo("Show", (int*)&g_SelectedSceneType, g_SceneTypeStrs.data(), g_SceneTypeStrs.size(), -1);
+		ImGui::Combo(u8"การแสดง", (int*)&g_SelectedSceneType, g_SceneTypeStrs.data(), g_SceneTypeStrs.size(), -1);
 
 		if (g_SelectedSceneType == SceneType::CAN_CAN_01 || g_SelectedSceneType == SceneType::CAN_CAN_02)
 		{
-			RenderActorDef(g_CanCanDancerOverrides[0], "Dancer 1");
-			RenderActorDef(g_CanCanDancerOverrides[1], "Dancer 2");
-			RenderActorDef(g_CanCanDancerOverrides[2], "Dancer 3");
-			RenderActorDef(g_CanCanDancerOverrides[3], "Dancer 4");
-			RenderActorDef(g_CanCanDanceConductorOverride, "Conductor");
+			RenderActorDef(g_CanCanDancerOverrides[0], u8"นักเต้น 1");
+			RenderActorDef(g_CanCanDancerOverrides[1], u8"นักเต้น 2");
+			RenderActorDef(g_CanCanDancerOverrides[2], u8"นักเต้น 3");
+			RenderActorDef(g_CanCanDancerOverrides[3], u8"นักเต้น 4");
+			RenderActorDef(g_CanCanDanceConductorOverride, u8"วาทยากร");
 		}
 		else if (g_SelectedSceneType == SceneType::FIRE_BREATHER)
 		{
-			RenderActorDef(g_FireBreatherOverride, "Breather");
+			RenderActorDef(g_FireBreatherOverride, u8"นักพ่นไฟ");
 		}
 		else if ((g_SelectedSceneType == SceneType::FIRE_DANCER_01 || g_SelectedSceneType == SceneType::FIRE_DANCER_02))
 		{
-			RenderActorDef(g_FireDancerOverride, "Dancer");
+			RenderActorDef(g_FireDancerOverride, u8"นักเต้น");
 		}
 		else if ((g_SelectedSceneType == SceneType::SNAKE_DANCER_01 || g_SelectedSceneType == SceneType::SNAKE_DANCER_02))
 		{
-			RenderActorDef(g_SnakeDancerOverride, "Dancer");
+			RenderActorDef(g_SnakeDancerOverride, u8"นักเต้น");
 		}
 		else if (g_SelectedSceneType == SceneType::SWORD_DANCER)
 		{
-			RenderActorDef(g_SwordDancerOverride, "Dancer");
+			RenderActorDef(g_SwordDancerOverride, u8"นักเต้น");
 		}
 		else if (g_SelectedSceneType == SceneType::ODD_FELLOWS)
 		{
 			RenderActorDef(g_OddFellowsMarjorieOverride, "Miss Marjorie");
 			RenderActorDef(g_OddFellowsBruteOverride, "Bertram");
 			RenderActorDef(g_OddFellowsMagnificoOverride, "Magnifico the Magnificent");
-			RenderActorDef(g_OddFellowsAudienceMemberOverride, "Audience Member");
+			RenderActorDef(g_OddFellowsAudienceMemberOverride, u8"ผู้ชม");
 		}
 		else if (g_SelectedSceneType == SceneType::ESCAPE_ARTIST)
 		{
 			RenderActorDef(g_EscapeArtistOverride, "Escape Artist");
-			RenderActorDef(g_EscapeArtistAssistantOverride, "Assistant");
+			RenderActorDef(g_EscapeArtistAssistantOverride, u8"ผู้ช่วย");
 		}
 		else if (g_SelectedSceneType == SceneType::FLEX_FIGHT)
 		{
 			RenderActorDef(g_FlexFightStrongwomanOverride, "Strongwoman");
-			RenderActorDef(g_FlexFightAudienceMemberOverride, "Audience Member");
+			RenderActorDef(g_FlexFightAudienceMemberOverride, u8"ผู้ชม");
 		}
 		else if (g_SelectedSceneType == SceneType::BAND_01 || g_SelectedSceneType == SceneType::BAND_02)
 		{
-			RenderActorDef(g_BandBassistOverride, "Bassist");
-			RenderActorDef(g_BandDrummerOverride, "Drummer");
-			RenderActorDef(g_BandPianistOverride, "Pianist");
-			RenderActorDef(g_BandSingerOverride, "Singer");
+			RenderActorDef(g_BandBassistOverride, u8"มือเบส");
+			RenderActorDef(g_BandDrummerOverride, u8"มือกลอง");
+			RenderActorDef(g_BandPianistOverride, u8"นักเปียโน");
+			RenderActorDef(g_BandSingerOverride, u8"นักร้อง");
 		}
 
-		ImGui::Checkbox("Auto Cleanup", &g_AutoCleanup);
+		ImGui::Checkbox(u8"ลบอัตโนมัติเมื่อจบ", &g_AutoCleanup);
 		if (*Pointers.IsSessionStarted)
 		{
-			ImGui::Checkbox("Spawn Audience Members", &g_SpawnAudience);
+			ImGui::Checkbox(u8"เสกผู้ชม", &g_SpawnAudience);
 		}
 
 		ImGui::BeginDisabled(g_RunningSceneScriptID != -1);
-		if (ImGui::Button("Start"))
+		if (ImGui::Button(u8"เริ่ม"))
 		{
 			FiberPool::Push([] {
 				std::uint32_t hash;
@@ -758,7 +759,7 @@ namespace YimMenu::Submenus
 		ImGui::EndDisabled();
 		ImGui::SameLine();
 		ImGui::BeginDisabled(g_RunningSceneScriptID == -1);
-		if (ImGui::Button("Stop"))
+		if (ImGui::Button(u8"หยุด"))
 		{
 			FiberPool::Push([] {
 				ShutdownShow();

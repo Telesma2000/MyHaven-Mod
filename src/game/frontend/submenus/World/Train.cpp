@@ -19,7 +19,7 @@ namespace YimMenu::Submenus
 		static bool stopsForStations  = false; // Depends on hasConductor
 
 		ImGui::PushID("trains"_J);
-		if (ImGui::BeginCombo("##Preset Model", "Train Model"))
+		if (ImGui::BeginCombo("##Preset Model", u8"โมเดลรถไฟ"))
 		{
 			for (size_t i = 0; i < std::size(Data::g_Trains); ++i)
 			{
@@ -33,18 +33,18 @@ namespace YimMenu::Submenus
 		}
 
 
-		ImGui::Checkbox("Passengers", &hasPax);
+		ImGui::Checkbox(u8"มีผู้โดยสาร", &hasPax);
 		ImGui::SameLine();
 
-		ImGui::Checkbox("Conductor", &hasConductor);
+		ImGui::Checkbox(u8"มีคนขับ", &hasConductor);
 		ImGui::SameLine();
 
-		ImGui::Checkbox("Warp Into Seat", &warpOnSpawn);
+		ImGui::Checkbox(u8"วาร์ปขึ้นรถ", &warpOnSpawn);
 		ImGui::SameLine();
 
-		ImGui::Checkbox("Station Stops", &stopsForStations);
+		ImGui::Checkbox(u8"จอดตามสถานี", &stopsForStations);
 
-		if (ImGui::Button("Spawn"))
+		if (ImGui::Button(u8"เสก"))
 		{
 			if (selectedTrain != 0)
 			{

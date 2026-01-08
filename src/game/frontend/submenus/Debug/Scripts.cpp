@@ -29,19 +29,19 @@ namespace YimMenu::Submenus
 {
 	std::shared_ptr<Category> BuildScriptsMenu()
 	{
-		auto scripts = std::make_unique<Category>("Scripts");
+		auto scripts = std::make_unique<Category>(u8"สคริปต์");
 
-		auto threads = std::make_unique<Group>("Threads");
+		auto threads = std::make_unique<Group>(u8"เธรด");
 		threads->AddItem(std::make_unique<ImGuiItem>([] {
 			if (!Pointers.ScriptThreads || Pointers.ScriptThreads->size() == 0)
 			{
-				ImGui::TextDisabled("None");
+				ImGui::TextDisabled(u8"ไม่มี");
 				s_SelectedThread = nullptr;
 				return;
 			}
 
 			ImGui::SetNextItemWidth(225.0f);
-			if (ImGui::BeginCombo("Thread", s_SelectedThread ? s_SelectedScriptName : "(Select)"))
+			if (ImGui::BeginCombo(u8"เธรด", s_SelectedThread ? s_SelectedScriptName : u8"(เลือก)"))
 			{
 				for (auto script : *Pointers.ScriptThreads)
 				{
@@ -79,13 +79,13 @@ namespace YimMenu::Submenus
 				constexpr auto s_ThreadStateNames = std::to_array({"Idle", "Running", "Killed", "Paused", "Unk"});
 				ImGui::SetNextItemWidth(95.0f);
 				ImGui::Combo(
-				    "State", (int*)&s_SelectedThread->m_Context.m_State, s_ThreadStateNames.data(), s_ThreadStateNames.size(), -1);
+				    u8"สถานะ", (int*)&s_SelectedThread->m_Context.m_State, s_ThreadStateNames.data(), s_ThreadStateNames.size(), -1);
 				ImGui::Text(std::format("StackSize: {}", s_SelectedThread->m_Context.m_StackSize).c_str());
 				ImGui::Text(std::format("PC: 0x{:X}", s_SelectedThread->m_Context.m_ProgramCounter).c_str());
 
 				if (s_SelectedThread->m_Context.m_State == rage::eThreadState::killed)
 				{
-					ImGui::Text(std::format("Exit Reason: {}", s_SelectedThread->m_ExitMessage).c_str());
+					ImGui::Text(std::format(u8"สาเหตุการปิด: {}", s_SelectedThread->m_ExitMessage).c_str());
 				}
 				else
 				{
@@ -95,10 +95,10 @@ namespace YimMenu::Submenus
 
 						if (handler->GetHost())
 						{
-							ImGui::Text("Host: %s", Player(handler->GetHost()).GetName());
+							ImGui::Text(u8"โฮสต์: %s", Player(handler->GetHost()).GetName());
 						}
 
-						if (ImGui::Button("Force Host"))
+						if (ImGui::Button(u8"บังคับเป็นโฮสต์"))
 						{
 							FiberPool::Push([handler] {
 								handler->DoHostMigration(Self::GetPlayer().GetHandle(), 0xFFFF, true);
@@ -108,7 +108,7 @@ namespace YimMenu::Submenus
 						ImGui::SameLine();
 					}
 
-					if (ImGui::Button("Kill"))
+					if (ImGui::Button(u8"ปิดการทำงาน"))
 					{
 						FiberPool::Push([] {
 							if (s_SelectedThread->m_Context.m_StackSize != 0)
@@ -121,10 +121,10 @@ namespace YimMenu::Submenus
 			}
 		}));
 
-		auto new_ = std::make_unique<Group>("New");
+		auto new_ = std::make_unique<Group>(u8"สร้างใหม่");
 		new_->AddItem(std::make_unique<ImGuiItem>([] {
 			ImGui::SetNextItemWidth(225.0f);
-			if (ImGui::BeginCombo("Name", s_SelectedNewScriptName))
+			if (ImGui::BeginCombo(u8"ชื่อ", s_SelectedNewScriptName))
 			{
 				auto& map = Scripts::UsingMPScripts() ? Data::g_MpScriptNames : Data::g_SpScriptNames;
 				for (auto& el : map)
@@ -141,7 +141,7 @@ namespace YimMenu::Submenus
 			}
 
 			ImGui::SetNextItemWidth(225.0f);
-			if (ImGui::BeginCombo("Stack Size", s_SelectedStackSizeStr))
+			if (ImGui::BeginCombo(u8"ขนาด Stack", s_SelectedStackSizeStr))
 			{
 				for (auto& p : Data::g_StackSizes)
 				{
@@ -161,9 +161,9 @@ namespace YimMenu::Submenus
 				ImGui::EndCombo();
 			}
 
-			ImGui::Text(std::format("Free Stacks: {}", s_NumFreeStacks).c_str());
+			ImGui::Text(std::format(u8"Stacks ที่ว่าง: {}", s_NumFreeStacks).c_str());
 
-			if (ImGui::Button("Start"))
+			if (ImGui::Button(u8"เริ่ม"))
 			{
 				FiberPool::Push([] {
 					auto hash = Joaat(s_SelectedNewScriptName);

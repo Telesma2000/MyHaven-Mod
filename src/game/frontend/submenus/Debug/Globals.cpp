@@ -35,7 +35,7 @@ namespace YimMenu::Submenus
 
 	std::shared_ptr<Category> BuildGlobalsMenu()
 	{
-		auto globals = std::make_unique<Category>("Globals");
+		auto globals = std::make_unique<Category>(u8"ตัวแปร Global");
 
 		static bool ensure_vars_loaded = ([] {
 			SavedVariables::Init();
@@ -46,13 +46,13 @@ namespace YimMenu::Submenus
 
 		static SavedGlobal cur_global{};
 
-		auto editor = std::make_unique<Group>("Editor");
+		auto editor = std::make_unique<Group>(u8"ตัวแก้ไข");
 		editor->AddItem(std::make_unique<ImGuiItem>([] {
 			DrawSavedVariable(cur_global);
 			DrawSavedVariableEdit(cur_global, cur_global.Read());
 		}));
 
-		auto saved = std::make_unique<Group>("Saved");
+		auto saved = std::make_unique<Group>(u8"ที่บันทึกไว้");
 		saved->AddItem(std::make_unique<ImGuiItem>([] {
 			if (ImGui::BeginListBox("##savedglobals", ImVec2(200, 200)))
 			{
@@ -79,15 +79,15 @@ namespace YimMenu::Submenus
 			ImGui::BeginGroup();
 
 			ImGui::SetNextItemWidth(200.f);
-			ImGui::InputTextWithHint("##global_name", "Name", global_name, sizeof(global_name));
+			ImGui::InputTextWithHint("##global_name", u8"ชื่อ", global_name, sizeof(global_name));
 			ImGui::SameLine();
-			if (ImGui::Button("Save"))
+			if (ImGui::Button(u8"บันทึก"))
 			{
 				cur_global.name = global_name;
 				SaveGlobal(cur_global);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Delete"))
+			if (ImGui::Button(u8"ลบ"))
 			{
 				cur_global.name = global_name;
 				DeleteGlobal(cur_global);

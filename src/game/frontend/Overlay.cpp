@@ -37,25 +37,25 @@ namespace YimMenu
 			if (stats.m_TotalBlocked > 0)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green
-				ImGui::Text("Protection Stats:");
+				ImGui::Text(u8"สถิติการป้องกัน:");
 				ImGui::PopStyleColor();
 
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.3f, 0.3f, 1.0f)); // Red
 				if (stats.m_CrashAttempts > 0)
-					ImGui::Text("  Crash Attempts Blocked: %d", stats.m_CrashAttempts);
+					ImGui::Text(u8"  ป้องกันการแครช: %d", stats.m_CrashAttempts);
 				ImGui::PopStyleColor();
 
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f)); // Orange
 				if (stats.m_KickAttempts > 0)
-					ImGui::Text("  Kick Attempts Blocked: %d", stats.m_KickAttempts);
+					ImGui::Text(u8"  ป้องกันการเตะ: %d", stats.m_KickAttempts);
 				if (stats.m_EntitySpam > 0)
-					ImGui::Text("  Entity Spam Blocked: %d", stats.m_EntitySpam);
+					ImGui::Text(u8"  ป้องกันสแปม Entity: %d", stats.m_EntitySpam);
 				if (stats.m_EventSpam > 0)
-					ImGui::Text("  Event Spam Blocked: %d", stats.m_EventSpam);
+					ImGui::Text(u8"  ป้องกันสแปม Event: %d", stats.m_EventSpam);
 				ImGui::PopStyleColor();
 
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f)); // Gray
-				ImGui::Text("  Total Blocked: %d", stats.m_TotalBlocked);
+				ImGui::Text(u8"  ป้องกันทั้งหมด: %d", stats.m_TotalBlocked);
 				ImGui::PopStyleColor();
 			}
 		}

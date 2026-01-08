@@ -9,22 +9,22 @@ namespace YimMenu::Submenus
 {
 	std::shared_ptr<Category> BuildHelpfulMenu() 
 	{ 
-		auto menu = std::make_shared<Category>("Helpful");
+		auto menu = std::make_shared<Category>(u8"ช่วยเหลือ");
 
-		menu->AddItem(std::make_shared<PlayerCommandItem>("spawngoldchest"_J));
+		menu->AddItem(std::make_shared<PlayerCommandItem>("spawngoldchest"_J, u8"เสกหีบทอง"));
 		menu->AddItem(std::make_shared<ImGuiItem>([] {
 			// TODO: move, refactor, or remove these
-			if (ImGui::Button("Spawn Bounty Wagon for Player"))
+			if (ImGui::Button(u8"เสกรถนักล่าค่าหัวให้ผู้เล่น"))
 			{
 				FiberPool::Push([] {
 					Vector3 coords = ENTITY::GET_ENTITY_COORDS(Players::GetSelected().GetPed().GetHandle(), true, true);
 					float rot = ENTITY::GET_ENTITY_ROTATION(Players::GetSelected().GetPed().GetHandle(), 0).z;
 					Vehicle::Create("wagonarmoured01x"_J, coords, rot);
-					Notifications::Show("Spawned Wagon", "Spawned Bounty Wagon for Player", NotificationType::Success);
+					Notifications::Show("Spawned Wagon", u8"เสกรถนักล่าค่าหัวให้ผู้เล่นแล้ว", NotificationType::Success);
 				});
 			};
 
-			if (ImGui::Button("Spawn Hunting Wagon for Player"))
+			if (ImGui::Button(u8"เสกรถล่าสัตว์ให้ผู้เล่น"))
 			{
 				FiberPool::Push([] {
 					int id   = Players::GetSelected().GetId();
@@ -40,7 +40,7 @@ namespace YimMenu::Submenus
 					Vehicle::Create("huntercart01"_J,
 					    Vector3{pos.x + (dir.x * offset), pos.y + (dir.y * offset), pos.z},
 					    ENTITY::GET_ENTITY_ROTATION(ped, 0).z);
-					Notifications::Show("Spawned Wagon", "Spawned Hunting Wagon for Player", NotificationType::Success);
+					Notifications::Show("Spawned Wagon", u8"เสกรถล่าสัตว์ให้ผู้เล่นแล้ว", NotificationType::Success);
 				});
 			}
 		}));

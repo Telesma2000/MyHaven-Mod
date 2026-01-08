@@ -28,18 +28,18 @@ namespace YimMenu::Submenus
 
 		if (ImGui::BeginPopupModal("##deletelocation", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 		{
-			ImGui::Text("Are you sure you want to delete %s?", locationToDelete.name);
+			ImGui::Text(u8"คุณแน่ใจหรือไม่ว่าต้องการลบ %s?", locationToDelete.name);
 
 			ImGui::Spacing();
 
-			if (ImGui::Button("Yes"))
+			if (ImGui::Button(u8"ใช่"))
 			{
 				SavedLocations::DeleteSavedLocation(category, locationToDelete.name);
 				locationToDelete.name = "";
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("No"))
+			if (ImGui::Button(u8"ไม่"))
 			{
 				locationToDelete.name = "";
 				ImGui::CloseCurrentPopup();
@@ -49,13 +49,13 @@ namespace YimMenu::Submenus
 		}
 
 		ImGui::PushItemWidth(300);
-		InputTextWithHint("Category", "Category", &category).Draw();
+		InputTextWithHint("Category", u8"หมวดหมู่", &category).Draw();
 
 		ImGui::PushItemWidth(200);
-		InputTextWithHint("Location name", "New location", &newLocationName).Draw();
+		InputTextWithHint("Location name", u8"ชื่อสถานที่", &newLocationName).Draw();
 		ImGui::PopItemWidth();
 
-		if (ImGui::Button("Save current location")) // Button widget still crashes
+		if (ImGui::Button(u8"บันทึกตำแหน่งปัจจุบัน")) // Button widget still crashes
 		{
 			FiberPool::Push([=] {
 				if (newLocationName.empty())
@@ -91,15 +91,15 @@ namespace YimMenu::Submenus
 
 		ImGui::Separator();
 
-		ImGui::Text("Double click to teleport\nShift click to delete");
+		ImGui::Text(u8"ดับเบิลคลิกเพื่อวาร์ป\nShift + คลิกเพื่อลบ");
 
 		ImGui::Spacing();
 
 		static std::string filter{};
-		InputTextWithHint("##filter", "Search", &filter).Draw();
+		InputTextWithHint("##filter", u8"ค้นหา", &filter).Draw();
 
 		ImGui::BeginGroup();
-		ImGui::Text("Categories");
+		ImGui::Text(u8"หมวดหมู่");
 		if (ImGui::BeginListBox("##categories", {200, -1}))
 		{
 			for (auto& l : SavedLocations::GetAllSavedLocations() | std::ranges::views::keys)
@@ -119,7 +119,7 @@ namespace YimMenu::Submenus
 		ImGui::EndGroup();
 		ImGui::SameLine();
 		ImGui::BeginGroup();
-		ImGui::Text("Locations");
+		ImGui::Text(u8"สถานที่");
 		if (ImGui::BeginListBox("##saved_locs", {200, -1})) // Need automatic dimensions instead of hard coded
 		{
 			if (SavedLocations::GetAllSavedLocations().find(category) != SavedLocations::GetAllSavedLocations().end())
@@ -156,7 +156,7 @@ namespace YimMenu::Submenus
 						ImGui::BeginTooltip();
 						if (l.name.length() > 27)
 							ImGui::Text(l.name.data());
-						ImGui::Text("Distance: %f", GetDistanceFromLocation(l));
+						ImGui::Text(u8"ระยะห่าง: %f", GetDistanceFromLocation(l));
 						ImGui::EndTooltip();
 					}
 				}
@@ -173,19 +173,19 @@ namespace YimMenu::Submenus
 	Teleport::Teleport() :
 	    Submenu::Submenu("Teleport")
 	{
-		auto main      = std::make_shared<Category>("Main");
-		auto miscGroup = std::make_shared<Group>("Misc");
+		auto main      = std::make_shared<Category>(u8"หน้าหลัก");
+		auto miscGroup = std::make_shared<Group>(u8"อื่นๆ");
 
-		miscGroup->AddItem(std::make_shared<BoolCommandItem>("autotp"_J));
-		miscGroup->AddItem(std::make_shared<CommandItem>("tptowaypoint"_J));
-		miscGroup->AddItem(std::make_shared<CommandItem>("tptomount"_J));
-		miscGroup->AddItem(std::make_shared<CommandItem>("tptotraintrack"_J));
-		miscGroup->AddItem(std::make_shared<CommandItem>("tptomoonshineshack"_J));
-		miscGroup->AddItem(std::make_shared<CommandItem>("tptonazar"_J));
+		miscGroup->AddItem(std::make_shared<BoolCommandItem>("autotp"_J, u8"วาร์ปอัตโนมัติ"));
+		miscGroup->AddItem(std::make_shared<CommandItem>("tptowaypoint"_J, u8"วาร์ปไป Waypoint"));
+		miscGroup->AddItem(std::make_shared<CommandItem>("tptomount"_J, u8"วาร์ปไปหาม้า"));
+		miscGroup->AddItem(std::make_shared<CommandItem>("tptotraintrack"_J, u8"วาร์ปไปรางรถไฟ"));
+		miscGroup->AddItem(std::make_shared<CommandItem>("tptomoonshineshack"_J, u8"วาร์ปไปโรงต้มเหล้า"));
+		miscGroup->AddItem(std::make_shared<CommandItem>("tptonazar"_J, u8"วาร์ปไปหา Madam Nazar"));
 
 		main->AddItem(miscGroup);
 
-		auto customteleport = std::make_shared<Category>("Saved");
+		auto customteleport = std::make_shared<Category>(u8"ที่บันทึกไว้");
 		customteleport->AddItem(std::make_shared<ImGuiItem>([] {
 			RenderCustomTeleport();
 		}));

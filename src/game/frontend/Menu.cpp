@@ -40,11 +40,11 @@ namespace YimMenu
 
                 ImGui::SetNextWindowSize(ImVec2((*Pointers.ScreenResX / 3.1), (*Pointers.ScreenResY / 1.5)), ImGuiCond_Once);
 
-                if (ImGui::Begin("Haven - Peaceful Menu", nullptr, ImGuiWindowFlags_NoDecoration))
+                if (ImGui::Begin(u8"น้องไอ - Peaceful Menu", nullptr, ImGuiWindowFlags_NoDecoration))
                 {
                     // Western crimson red for the title, like a wanted poster
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.25f, 0.18f, 1.0f)); // Western Crimson
-                    if (ImGui::Button("HAVEN", ImVec2(120, 0)))
+                    if (ImGui::Button(u8"น้องไอ", ImVec2(120, 0)))
                     {
                         if (ScriptMgr::CanTick())
                         {
@@ -129,11 +129,12 @@ namespace YimMenu
         ImFontConfig FontCfg{};
         FontCfg.FontDataOwnedByAtlas = false;
 
-        Menu::Font::g_DefaultFont = IO.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Fonts::MainFont), sizeof(Fonts::MainFont), Menu::Font::g_DefaultFontSize, &FontCfg);
-        Menu::Font::g_OptionsFont = IO.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Fonts::MainFont), sizeof(Fonts::MainFont), Menu::Font::g_OptionsFontSize, &FontCfg);
-        Menu::Font::g_ChildTitleFont = IO.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Fonts::MainFont), sizeof(Fonts::MainFont), Menu::Font::g_ChildTitleFontSize, &FontCfg);
-        Menu::Font::g_ChatFont = IO.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Fonts::MainFont), sizeof(Fonts::MainFont), Menu::Font::g_ChatFontSize, &FontCfg);
-        Menu::Font::g_OverlayFont = IO.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Fonts::MainFont), sizeof(Fonts::MainFont), Menu::Font::g_OverlayFontSize, &FontCfg);
+        // Load Thai Font from C:\font.ttf as requested
+        Menu::Font::g_DefaultFont = IO.Fonts->AddFontFromFileTTF("C:\\font.ttf", Menu::Font::g_DefaultFontSize, &FontCfg, IO.Fonts->GetGlyphRangesThai());
+        Menu::Font::g_OptionsFont = IO.Fonts->AddFontFromFileTTF("C:\\font.ttf", Menu::Font::g_OptionsFontSize, &FontCfg, IO.Fonts->GetGlyphRangesThai());
+        Menu::Font::g_ChildTitleFont = IO.Fonts->AddFontFromFileTTF("C:\\font.ttf", Menu::Font::g_ChildTitleFontSize, &FontCfg, IO.Fonts->GetGlyphRangesThai());
+        Menu::Font::g_ChatFont = IO.Fonts->AddFontFromFileTTF("C:\\font.ttf", Menu::Font::g_ChatFontSize, &FontCfg, IO.Fonts->GetGlyphRangesThai());
+        Menu::Font::g_OverlayFont = IO.Fonts->AddFontFromFileTTF("C:\\font.ttf", Menu::Font::g_OverlayFontSize, &FontCfg, IO.Fonts->GetGlyphRangesThai());
 
         UIManager::SetOptionsFont(Menu::Font::g_OptionsFont);
     }

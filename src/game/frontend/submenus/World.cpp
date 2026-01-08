@@ -41,17 +41,17 @@ namespace YimMenu::Submenus
 		std::string dateString = std::format("{}, {} {}, {}", dayOfWeekStr, monthStr, dayOfMonth, year);
 		std::string time       = std::format("{:02}:{:02}:{:02}", hours, minutes, seconds);
 
-		ImGui::Text("Date: %s", dateString.c_str());
-		ImGui::Text("Time: %s", time.c_str());
+		ImGui::Text(u8"วันที่: %s", dateString.c_str());
+		ImGui::Text(u8"เวลา: %s", time.c_str());
 	}
 
 	World::World() :
 	    Submenu::Submenu("World")
 	{
-		auto main    = std::make_shared<Category>("Main");
-		auto weather = std::make_shared<Category>("Weather");
-		auto shows   = std::make_shared<Category>("Shows");
-		auto time    = std::make_shared<Category>("Time");
+		auto main    = std::make_shared<Category>(u8"หน้าหลัก");
+		auto weather = std::make_shared<Category>(u8"สภาพอากาศ");
+		auto shows   = std::make_shared<Category>(u8"การแสดง");
+		auto time    = std::make_shared<Category>(u8"เวลา");
 
 
 		time->AddItem(std::make_shared<ImGuiItem>([] {
@@ -60,17 +60,17 @@ namespace YimMenu::Submenus
 
 			DisplayCurrentDate();
 
-			ImGui::SliderInt("Hour", &hour, 0, 23);
-			ImGui::SliderInt("Minute", &minute, 0, 59);
-			ImGui::SliderInt("Second", &second, 0, 59);
-			ImGui::Checkbox("Freeze", &freeze);
-			if (ImGui::Button("Change Time"))
+			ImGui::SliderInt(u8"ชั่วโมง", &hour, 0, 23);
+			ImGui::SliderInt(u8"นาที", &minute, 0, 59);
+			ImGui::SliderInt(u8"วินาที", &second, 0, 59);
+			ImGui::Checkbox(u8"หยุดเวลา", &freeze);
+			if (ImGui::Button(u8"เปลี่ยนเวลา"))
 			{
 				FiberPool::Push([] {
 					ChangeTime(hour, minute, second, 0, freeze);
 				});
 			}
-			if (ImGui::Button("Restore"))
+			if (ImGui::Button(u8"คืนค่า"))
 			{
 				FiberPool::Push([] {
 					NETWORK::_NETWORK_CLEAR_CLOCK_OVERRIDE_OVERTIME(0);
@@ -81,7 +81,7 @@ namespace YimMenu::Submenus
 
 		weather->AddItem(std::make_shared<ImGuiItem>([] {
 			static const char* current_weather = WeatherTypes[0]; // Default weather
-			if (ImGui::BeginCombo("Weather Types", current_weather))
+			if (ImGui::BeginCombo(u8"สภาพอากาศ", current_weather))
 			{
 				for (auto& weather_type : WeatherTypes)
 				{
@@ -98,7 +98,7 @@ namespace YimMenu::Submenus
 				}
 				ImGui::EndCombo();
 			}
-			if (ImGui::Button("Restore"))
+			if (ImGui::Button(u8"คืนค่า"))
 			{
 				FiberPool::Push([] {
 					MISC::CLEAR_OVERRIDE_WEATHER();
@@ -107,20 +107,20 @@ namespace YimMenu::Submenus
 		}));
 
 
-		auto spawners            = std::make_shared<Category>("Spawners");
-		auto pedSpawnerGroup     = std::make_shared<Group>("Ped Spawner");
-		auto vehicleSpawnerGroup = std::make_shared<Group>("Vehicle Spawner");
-		auto trainSpawnerGroup   = std::make_shared<Group>("Train Spawner");
-		auto buildModeGroup      = std::make_shared<Group>("Build Mode (Sims Style)"); // Added Group
+		auto spawners            = std::make_shared<Category>(u8"เสกของ");
+		auto pedSpawnerGroup     = std::make_shared<Group>(u8"เสกคน (Ped)");
+		auto vehicleSpawnerGroup = std::make_shared<Group>(u8"เสกยานพาหนะ");
+		auto trainSpawnerGroup   = std::make_shared<Group>(u8"เสกรถไฟ");
+		auto buildModeGroup      = std::make_shared<Group>(u8"โหมดสร้าง (สไตล์ Sims)"); // Added Group
 
 		// Build Mode Integration
-		buildModeGroup->AddItem(std::make_shared<BoolCommandItem>("buildmodeactive"_J));
-		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<BoolCommandItem>("buildmodecamera"_J)));
-		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<ListCommandItem>("buildcategory"_J)));
-		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<CommandItem>("spawnbuildobject"_J)));
-		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<CommandItem>("clearallobjects"_J)));
+		buildModeGroup->AddItem(std::make_shared<BoolCommandItem>("buildmodeactive"_J, u8"เปิดโหมดสร้าง"));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<BoolCommandItem>("buildmodecamera"_J, u8"กล้องโหมดสร้าง")));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<ListCommandItem>("buildcategory"_J, u8"หมวดหมู่")));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<CommandItem>("spawnbuildobject"_J, u8"เสกวัตถุ")));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<CommandItem>("clearallobjects"_J, u8"ลบวัตถุทั้งหมด")));
 		buildModeGroup->AddItem(std::make_shared<ImGuiItem>([] {
-			ImGui::TextWrapped("Build your own camp! Use WASD to move camera, arrow keys to rotate objects.");
+			ImGui::TextWrapped(u8"สร้างแคมป์ของคุณเอง! ใช้ WASD เพื่อเลื่อนกล้อง, ปุ่มลูกศรเพื่อหมุนวัตถุ");
 		}));
 
 		pedSpawnerGroup->AddItem(std::make_shared<ImGuiItem>([] {
@@ -143,44 +143,44 @@ namespace YimMenu::Submenus
 		auto poolCounter = std::make_shared<ImGuiItem>([] {
 			if (GetPedPool())
 				ImGui::Text("%s",
-				    std::format("Peds: {}/{}", GetPedPool()->m_Size - GetPedPool()->GetNumFreeSlots(), GetPedPool()->m_Size)
+				    std::format(u8"คน (Peds): {}/{}", GetPedPool()->m_Size - GetPedPool()->GetNumFreeSlots(), GetPedPool()->m_Size)
 				        .data());
 			if (GetVehiclePool())
 				ImGui::Text("%s",
-				    std::format("Vehicles: {}/{}",
+				    std::format(u8"ยานพาหนะ: {}/{}",
 				        GetVehiclePool()->m_Size - GetVehiclePool()->GetNumFreeSlots(),
 				        GetVehiclePool()->m_Size)
 				        .data());
 			if (GetObjectPool())
 				ImGui::Text("%s",
-				    std::format("Objects: {}/{}",
+				    std::format(u8"วัตถุ: {}/{}",
 				        GetObjectPool()->m_Size - GetObjectPool()->GetNumFreeSlots(),
 				        GetObjectPool()->m_Size)
 				        .data());
 		});
 
-		auto killPeds = std::make_shared<Group>("Kill", 1);
-		killPeds->AddItem(std::make_shared<CommandItem>("killallpeds"_J));
-		killPeds->AddItem(std::make_shared<CommandItem>("killallenemies"_J));
-		auto deleteOpts = std::make_shared<Group>("Delete", 1);
-		deleteOpts->AddItem(std::make_shared<CommandItem>("delpeds"_J));
-		deleteOpts->AddItem(std::make_shared<CommandItem>("delvehs"_J));
-		deleteOpts->AddItem(std::make_shared<CommandItem>("delobjs"_J));
-		auto bringOpts = std::make_shared<Group>("Bring", 1);
-		bringOpts->AddItem(std::make_shared<CommandItem>("bringpeds"_J));
-		bringOpts->AddItem(std::make_shared<CommandItem>("bringvehs"_J));
-		bringOpts->AddItem(std::make_shared<CommandItem>("bringobjs"_J));
-		auto minigames = std::make_shared<Group>("Minigames", 1);
-		minigames->AddItem(std::make_shared<BoolCommandItem>("undeadnightmare"_J));
-		minigames->AddItem(std::make_shared<ConditionalItem>("undeadnightmare"_J, std::make_shared<BoolCommandItem>("zombieslogging"_J)));
-		minigames->AddItem(std::make_shared<ConditionalItem>("undeadnightmare"_J, std::make_shared<BoolCommandItem>("hardmode"_J)));
-		auto misc = std::make_shared<Group>("Misc");
-		misc->AddItem(std::make_shared<BoolCommandItem>("disableguardzones"_J));
+		auto killPeds = std::make_shared<Group>(u8"ฆ่า", 1);
+		killPeds->AddItem(std::make_shared<CommandItem>("killallpeds"_J, u8"ฆ่าคนทั้งหมด"));
+		killPeds->AddItem(std::make_shared<CommandItem>("killallenemies"_J, u8"ฆ่าศัตรูทั้งหมด"));
+		auto deleteOpts = std::make_shared<Group>(u8"ลบ", 1);
+		deleteOpts->AddItem(std::make_shared<CommandItem>("delpeds"_J, u8"ลบคน"));
+		deleteOpts->AddItem(std::make_shared<CommandItem>("delvehs"_J, u8"ลบยานพาหนะ"));
+		deleteOpts->AddItem(std::make_shared<CommandItem>("delobjs"_J, u8"ลบวัตถุ"));
+		auto bringOpts = std::make_shared<Group>(u8"ดึงมา", 1);
+		bringOpts->AddItem(std::make_shared<CommandItem>("bringpeds"_J, u8"ดึงคนมา"));
+		bringOpts->AddItem(std::make_shared<CommandItem>("bringvehs"_J, u8"ดึงยานพาหนะมา"));
+		bringOpts->AddItem(std::make_shared<CommandItem>("bringobjs"_J, u8"ดึงวัตถุมา"));
+		auto minigames = std::make_shared<Group>(u8"มินิเกม", 1);
+		minigames->AddItem(std::make_shared<BoolCommandItem>("undeadnightmare"_J, u8"Undead Nightmare"));
+		minigames->AddItem(std::make_shared<ConditionalItem>("undeadnightmare"_J, std::make_shared<BoolCommandItem>("zombieslogging"_J, u8"บันทึกข้อมูลซอมบี้")));
+		minigames->AddItem(std::make_shared<ConditionalItem>("undeadnightmare"_J, std::make_shared<BoolCommandItem>("hardmode"_J, u8"โหมดยาก")));
+		auto misc = std::make_shared<Group>(u8"อื่นๆ");
+		misc->AddItem(std::make_shared<BoolCommandItem>("disableguardzones"_J, u8"ปิดเขตหวงห้าม"));
 		auto eventOverride = std::make_shared<Group>("", 1);
-		eventOverride->AddItem(std::make_shared<BoolCommandItem>("eventoverrideenabled"_J));
-		eventOverride->AddItem(std::make_shared<ConditionalItem>("eventoverrideenabled"_J, std::make_shared<ListCommandItem>("eventoverride"_J)));
+		eventOverride->AddItem(std::make_shared<BoolCommandItem>("eventoverrideenabled"_J, u8"เปิดทับอีเวนต์"));
+		eventOverride->AddItem(std::make_shared<ConditionalItem>("eventoverrideenabled"_J, std::make_shared<ListCommandItem>("eventoverride"_J, u8"เลือกอีเวนต์")));
 		misc->AddItem(std::move(eventOverride));
-		misc->AddItem(std::make_shared<CommandItem>("mapeditor"_J));
+		misc->AddItem(std::make_shared<CommandItem>("mapeditor"_J, u8"ตัวแก้ไขแผนที่"));
 
 		main->AddItem(std::move(poolCounter));
 		main->AddItem(std::move(killPeds));

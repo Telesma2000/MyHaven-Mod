@@ -21,19 +21,19 @@ namespace YimMenu::Submenus
 
 	std::shared_ptr<Category> BuildInfoMenu()
 	{
-		auto menu = std::make_shared<Category>("Info");
+		auto menu = std::make_shared<Category>(u8"ข้อมูล");
 
-		auto teleportGroup      = std::make_shared<Group>("Teleport");
-		auto playerOptionsGroup = std::make_shared<Group>("Info");
+		auto teleportGroup      = std::make_shared<Group>(u8"วาร์ป");
+		auto playerOptionsGroup = std::make_shared<Group>(u8"ข้อมูลทั่วไป");
 
 		playerOptionsGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			if (Players::GetSelected().IsValid())
 			{
 				ImGui::Text(Players::GetSelected().GetName());
-				ImGui::Checkbox("Spectate", &YimMenu::g_Spectating);
-				ImGui::Checkbox("Block Explosions", &Players::GetSelected().GetData().m_BlockExplosions);
-				ImGui::Checkbox("Block Particles", &Players::GetSelected().GetData().m_BlockParticles);
-				if (ImGui::Checkbox("Ghost Mode", &Players::GetSelected().GetData().m_GhostMode))
+				ImGui::Checkbox(u8"ส่องดู", &YimMenu::g_Spectating);
+				ImGui::Checkbox(u8"บล็อคระเบิด", &Players::GetSelected().GetData().m_BlockExplosions);
+				ImGui::Checkbox(u8"บล็อคอนุภาค", &Players::GetSelected().GetData().m_BlockParticles);
+				if (ImGui::Checkbox(u8"โหมดวิญญาณ", &Players::GetSelected().GetData().m_GhostMode))
 				{
 					if (Players::GetSelected().GetData().m_GhostMode)
 					{
@@ -46,24 +46,24 @@ namespace YimMenu::Submenus
 					}
 				}
 
-				ImGui::Text("Rank: %s", std::to_string(Players::GetSelected().GetRank()));
+				ImGui::Text(u8"เลเวล: %s", std::to_string(Players::GetSelected().GetRank()));
 
 				if (Players::GetSelected().GetPed())
 				{
 					auto health    = Players::GetSelected().GetPed().GetHealth();
 					auto maxHealth = Players::GetSelected().GetPed().GetMaxHealth();
-					std::string healthStr = std::format("HP: {}/{} ({:.2f}%)", health, maxHealth, (float)health / maxHealth * 100.0f);
+					std::string healthStr = std::format(u8"เลือด: {}/{} ({:.2f}%)", health, maxHealth, (float)health / maxHealth * 100.0f);
 					ImGui::Text("%s", healthStr.c_str());
 
 					auto coords = Players::GetSelected().GetPed().GetPosition();
-					ImGui::Text("Coords: %.2f, %.2f, %.2f", coords.x, coords.y, coords.z);
+					ImGui::Text(u8"พิกัด: %.2f, %.2f, %.2f", coords.x, coords.y, coords.z);
 
 					auto distance = Players::GetSelected().GetPed().GetPosition().GetDistance(Self::GetPed().GetPosition());
-					ImGui::Text("Distance: %.2f", distance);
+					ImGui::Text(u8"ระยะห่าง: %.2f", distance);
 				}
 				else
 				{
-					ImGui::Text("Ped missing or deleted");
+					ImGui::Text(u8"ไม่พบตัวละครหรือถูกลบ");
 				}
 
 				auto rid        = Players::GetSelected().GetGamerInfo()->m_GamerHandle.m_RockstarId;
@@ -86,14 +86,14 @@ namespace YimMenu::Submenus
 					std::string spoofedRidStr = std::to_string(rid);
 					std::string ridStr        = std::to_string(rid1);
 
-					ImGui::Text("Spoofed RID:");
+					ImGui::Text(u8"RID ปลอม:");
 					ImGui::SameLine();
 					if (ImGui::Button(spoofedRidStr.c_str()))
 					{
 						ImGui::SetClipboardText(spoofedRidStr.c_str());
 					}
 
-					ImGui::Text("Real RID:");
+					ImGui::Text(u8"RID จริง:");
 					ImGui::SameLine();
 					if (ImGui::Button(ridStr.c_str()))
 					{
@@ -108,7 +108,7 @@ namespace YimMenu::Submenus
 
 				auto addr2 = BuildIPStr(ip2.m_field1, ip2.m_field2, ip2.m_field3, ip2.m_field4);
 
-				ImGui::Text("Endpoint IP Address:");
+				ImGui::Text(u8"ที่อยู่ IP ปลายทาง:");
 				ImGui::SameLine();
 				if (ImGui::Button(addr2.c_str()))
 				{
@@ -119,7 +119,7 @@ namespace YimMenu::Submenus
 				{
 					auto ipStr = BuildIPStr(ip.m_field1, ip.m_field2, ip.m_field3, ip.m_field4);
 
-					ImGui::Text("IP Address:");
+					ImGui::Text(u8"ที่อยู่ IP:");
 					ImGui::SameLine();
 					if (ImGui::Button(ipStr.c_str()))
 					{
@@ -131,14 +131,14 @@ namespace YimMenu::Submenus
 					auto spoofedIpStr = BuildIPStr(ip1.m_field1, ip1.m_field2, ip1.m_field3, ip1.m_field4);
 					auto realIpStr    = BuildIPStr(ip.m_field1, ip.m_field2, ip.m_field3, ip.m_field4);
 
-					ImGui::Text("Spoofed IP Address:");
+					ImGui::Text(u8"IP ปลอม:");
 					ImGui::SameLine();
 					if (ImGui::Button(spoofedIpStr.c_str()))
 					{
 						ImGui::SetClipboardText(spoofedIpStr.c_str());
 					}
 
-					ImGui::Text("Real IP Address:");
+					ImGui::Text(u8"IP จริง:");
 					ImGui::SameLine();
 					if (ImGui::Button(realIpStr.c_str()))
 					{
@@ -146,71 +146,71 @@ namespace YimMenu::Submenus
 					}
 				}
 
-				if (ImGui::Button("View SC Profile"))
+				if (ImGui::Button(u8"ดูโปรไฟล์ SC"))
 					FiberPool::Push([] {
 						uint64_t handle[18];
 						NETWORK::NETWORK_HANDLE_FROM_PLAYER(Players::GetSelected().GetId(), (Any*)&handle);
 						NETWORK::NETWORK_SHOW_PROFILE_UI((Any*)&handle);
 					});
 				ImGui::SameLine();
-				if (ImGui::Button("Add Friend"))
+				if (ImGui::Button(u8"เพิ่มเพื่อน"))
 					FiberPool::Push([] {
 						uint64_t handle[18];
 						NETWORK::NETWORK_HANDLE_FROM_PLAYER(Players::GetSelected().GetId(), (Any*)&handle);
 						NETWORK::NETWORK_ADD_FRIEND((Any*)&handle, "");
 					});
 				ImGui::SameLine();
-				if (ImGui::Button("Add to Database"))
+				if (ImGui::Button(u8"เพิ่มลงฐานข้อมูล"))
 				{
 					auto plyr = Players::GetSelected();
 					g_PlayerDatabase->AddPlayer(plyr.GetRID(), plyr.GetName());
 				}
 
-				if (ImGui::Button("More Info"))
+				if (ImGui::Button(u8"ข้อมูลเพิ่มเติม"))
 					ImGui::OpenPopup("More Info");
 
 				ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 				if (ImGui::BeginPopupModal("More Info", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_Modal | ImGuiWindowFlags_AlwaysAutoResize))
 				{
-					ImGui::Text("Language: %s", g_LanguageMap[Players::GetSelected().GetLanguage()].c_str());
+					ImGui::Text(u8"ภาษา: %s", g_LanguageMap[Players::GetSelected().GetLanguage()].c_str());
 
 					auto honor = Players::GetSelected().GetHonor();
 					std::string honorLevel;
 
 					if (honor >= 0 && honor <= 7)
 					{
-						honorLevel = "Low";
+						honorLevel = u8"ต่ำ";
 					}
 					else if (honor > 7 && honor <= 10)
 					{
-						honorLevel = "Moderate";
+						honorLevel = u8"ปานกลาง";
 					}
 					else if (honor > 10 && honor <= 15)
 					{
-						honorLevel = "High";
+						honorLevel = u8"สูง";
 					}
 					else
 					{
-						honorLevel = "Invalid";
+						honorLevel = u8"ไม่ถูกต้อง";
 					}
 
 					honorLevel += " (" + std::to_string(honor) + "/15)";
-					ImGui::Text("Honor: %s", honorLevel.c_str());
+					ImGui::Text(u8"เกียรติยศ: %s", honorLevel.c_str());
 
 					std::string model = std::format("0x{:08X}", (joaat_t)Players::GetSelected().GetPed().GetModel());
-					ImGui::Text("Model: %s", model.c_str());
+					ImGui::Text(u8"โมเดล: %s", model.c_str());
 					ImGui::SameLine();
-					if (ImGui::Button("Copy"))
+					if (ImGui::Button(u8"คัดลอก"))
 						ImGui::SetClipboardText(model.c_str());
 
 					if (auto it = g_DistrictMap.find(Players::GetSelected().GetDistrict()); it != g_DistrictMap.end())
-						ImGui::Text("District: %s", it->second.c_str());
+						ImGui::Text(u8"เขต: %s", it->second.c_str());
 
 					if (auto it = g_RegionMap.find(Players::GetSelected().GetRegion()); it != g_RegionMap.end())
-						ImGui::Text("Region: %s", it->second.c_str());
+						ImGui::Text(u8"ภูมิภาค: %s", it->second.c_str());
 
 					auto internalIp = Players::GetSelected().GetInternalAddress();
-					ImGui::Text("Internal IP: %s",
+					ImGui::Text(u8"IP ภายใน: %s",
 					    std::format("{}.{}.{}.{}:{}",
 					        static_cast<int>(internalIp.m_field1),
 					        static_cast<int>(internalIp.m_field2),
@@ -220,7 +220,7 @@ namespace YimMenu::Submenus
 					        .c_str());
 
 					auto relayIp = Players::GetSelected().GetRelayAddress();
-					ImGui::Text("Relay IP: %s",
+					ImGui::Text(u8"IP รีเลย์: %s",
 					    std::format("{}.{}.{}.{}:{}",
 					        static_cast<int>(relayIp.m_field1),
 					        static_cast<int>(relayIp.m_field2),
@@ -230,14 +230,14 @@ namespace YimMenu::Submenus
 					        .c_str());
 
 
-					ImGui::Text("Connection Type: %u", Players::GetSelected().GetConnectionType());
+					ImGui::Text(u8"ประเภทการเชื่อมต่อ: %u", Players::GetSelected().GetConnectionType());
 
-					ImGui::Text("Average Latency: %.2f", Players::GetSelected().GetAverageLatency());
-					ImGui::Text("Packet Loss: %.2f", Players::GetSelected().GetAveragePacketLoss());
+					ImGui::Text(u8"ความหน่วงเฉลี่ย: %.2f", Players::GetSelected().GetAverageLatency());
+					ImGui::Text(u8"Packet Loss: %.2f", Players::GetSelected().GetAveragePacketLoss());
 
 					ImGui::Spacing();
 
-					if (ImGui::Button("Close") || ((!ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) && ImGui::IsMouseClicked(ImGuiMouseButton_Left)))
+					if (ImGui::Button(u8"ปิด") || ((!ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) && ImGui::IsMouseClicked(ImGuiMouseButton_Left)))
 						ImGui::CloseCurrentPopup();
 
 					ImGui::EndPopup();
@@ -246,18 +246,18 @@ namespace YimMenu::Submenus
 			else
 			{
 				Players::SetSelected(Self::GetPlayer());
-				ImGui::Text("No players yet!");
+				ImGui::Text(u8"ยังไม่มีผู้เล่น!");
 			}
 		}));
 
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tptoplayer"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tptoplayercamp"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpbehindplayer"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpintovehicle"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("bring"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpplayertowaypoint"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpplayertomadamnazar"_J));
-		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpplayertojail"_J));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tptoplayer"_J, u8"วาร์ปไปหาผู้เล่น"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tptoplayercamp"_J, u8"วาร์ปไปแคมป์ผู้เล่น"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpbehindplayer"_J, u8"วาร์ปไปหลังผู้เล่น"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpintovehicle"_J, u8"วาร์ปเข้ายานพาหนะ"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("bring"_J, u8"ดึงผู้เล่นมา"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpplayertowaypoint"_J, u8"ส่งผู้เล่นไปจุดมาร์ค"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpplayertomadamnazar"_J, u8"ส่งผู้เล่นไปหา Madam Nazar"));
+		teleportGroup->AddItem(std::make_shared<PlayerCommandItem>("tpplayertojail"_J, u8"ส่งผู้เล่นเข้าคุก"));
 
 		menu->AddItem(playerOptionsGroup);
 		menu->AddItem(teleportGroup);

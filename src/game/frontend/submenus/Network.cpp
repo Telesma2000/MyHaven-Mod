@@ -89,39 +89,39 @@ namespace YimMenu::Submenus
 	    Submenu::Submenu("Network")
 	{
 		// TODO: this needs a rework
-		auto session              = std::make_shared<Category>("Session");
-		auto spoofing             = std::make_shared<Category>("Spoofing");
-		auto database             = std::make_shared<Category>("Player Database");
-		auto sessionSwitcherGroup = std::make_shared<Group>("Session Switcher");
-		auto teleportGroup        = std::make_shared<Group>("Teleport");
-		auto miscGroup            = std::make_shared<Group>("Misc");
+		auto session              = std::make_shared<Category>(u8"เซสชั่น");
+		auto spoofing             = std::make_shared<Category>(u8"การปลอมแปลง");
+		auto database             = std::make_shared<Category>(u8"ฐานข้อมูลผู้เล่น");
+		auto sessionSwitcherGroup = std::make_shared<Group>(u8"เปลี่ยนเซสชั่น");
+		auto teleportGroup        = std::make_shared<Group>(u8"วาร์ป");
+		auto miscGroup            = std::make_shared<Group>(u8"อื่นๆ");
 
-		sessionSwitcherGroup->AddItem(std::make_shared<Vector3CommandItem>("newsessionpos"_J));
-		sessionSwitcherGroup->AddItem(std::make_shared<BoolCommandItem>("newsessionposse"_J));
-		sessionSwitcherGroup->AddItem(std::make_shared<CommandItem>("newsession"_J));
+		sessionSwitcherGroup->AddItem(std::make_shared<Vector3CommandItem>("newsessionpos"_J, u8"ตำแหน่งเซสชั่นใหม่"));
+		sessionSwitcherGroup->AddItem(std::make_shared<BoolCommandItem>("newsessionposse"_J, u8"เซสชั่นใหม่ (Posse)"));
+		sessionSwitcherGroup->AddItem(std::make_shared<CommandItem>("newsession"_J, u8"หาห้องใหม่"));
 
-		teleportGroup->AddItem(std::make_shared<CommandItem>("bringall"_J, "Bring All"));
-		teleportGroup->AddItem(std::make_shared<CommandItem>("tpalltowaypoint"_J));
+		teleportGroup->AddItem(std::make_shared<CommandItem>("bringall"_J, u8"ดึงทุกคนมา"));
+		teleportGroup->AddItem(std::make_shared<CommandItem>("tpalltowaypoint"_J, u8"วาร์ปทุกคนไป Waypoint"));
 		// Removed: tpalltojail (griefing feature)
 
 		// Removed entire Toxic group (explodeall, honor manipulation)
 
-		miscGroup->AddItem(std::make_shared<BoolCommandItem>("revealall"_J));
-		miscGroup->AddItem(std::make_shared<BoolCommandItem>("blockalltelemetry"_J));
-		miscGroup->AddItem(std::make_shared<BoolCommandItem>("locklobby"_J));
+		miscGroup->AddItem(std::make_shared<BoolCommandItem>("revealall"_J, u8"เปิดเผยผู้เล่นทั้งหมด"));
+		miscGroup->AddItem(std::make_shared<BoolCommandItem>("blockalltelemetry"_J, u8"บล็อค Telemetry ทั้งหมด"));
+		miscGroup->AddItem(std::make_shared<BoolCommandItem>("locklobby"_J, u8"ล็อคล็อบบี้"));
 
 		session->AddItem(sessionSwitcherGroup);
 		session->AddItem(teleportGroup);
 		// Removed: toxicGroup
 		session->AddItem(miscGroup);
 
-		spoofing->AddItem(std::make_shared<BoolCommandItem>("hidegod"_J));
-		spoofing->AddItem(std::make_shared<BoolCommandItem>("hidespectate"_J));
+		spoofing->AddItem(std::make_shared<BoolCommandItem>("hidegod"_J, u8"ซ่อนสถานะอมตะ"));
+		spoofing->AddItem(std::make_shared<BoolCommandItem>("hidespectate"_J, u8"ซ่อนการส่อง"));
 
 		database->AddItem(std::make_shared<ImGuiItem>([] {
 			ImGui::SetNextItemWidth(300.f);
 			ImGui::PushID(3);
-			ImGui::InputText("Player Name", search, sizeof(search));
+			ImGui::InputText(u8"ค้นหาชื่อผู้เล่น", search, sizeof(search));
 			ImGui::PopID();
 
 			if (ImGui::BeginListBox("###players", {180, static_cast<float>(*Pointers.ScreenResY - 400 - 38 * 4)}))
@@ -139,7 +139,7 @@ namespace YimMenu::Submenus
 				}
 				else
 				{
-					ImGui::Text("No Players Found!");
+					ImGui::Text(u8"ไม่พบผู้เล่น!");
 				}
 
 				ImGui::EndListBox();
@@ -150,23 +150,23 @@ namespace YimMenu::Submenus
 				ImGui::SameLine();
 				if (ImGui::BeginChild("###selected_player", {500, static_cast<float>(*Pointers.ScreenResY - 388 - 38 * 4)}, false, ImGuiWindowFlags_NoBackground))
 				{
-					if (ImGui::InputText("Name", name_buf, sizeof(name_buf)))
+					if (ImGui::InputText(u8"ชื่อ", name_buf, sizeof(name_buf)))
 					{
 						current_player->name = name_buf;
 						g_PlayerDatabase->Save();
 					}
 
 					if (ImGui::InputScalar("RID", ImGuiDataType_S64, &current_player->rid)
-					    || ImGui::Checkbox("Is Modder", &current_player->is_modder)
-					    || ImGui::Checkbox("Trust", &current_player->trust)
-					    || ImGui::Checkbox("Block Join", &current_player->block_join))
+					    || ImGui::Checkbox(u8"เป็น Modder", &current_player->is_modder)
+					    || ImGui::Checkbox(u8"เชื่อถือ", &current_player->trust)
+					    || ImGui::Checkbox(u8"บล็อคการเข้าร่วม", &current_player->block_join))
 					{
 						g_PlayerDatabase->Save();
 					}
 
 					if (!current_player->infractions.empty())
 					{
-						ImGui::Text("Infractions");
+						ImGui::Text(u8"การละเมิด");
 
 						std::unordered_map<int, int /*count*/> count_map;
 
@@ -186,12 +186,12 @@ namespace YimMenu::Submenus
 						}
 					}
 
-					if (ImGui::Button("Delete Player"))
+					if (ImGui::Button(u8"ลบผู้เล่น"))
 					{
 						g_PlayerDatabase->RemoveRID(current_player->rid);
 					}
 
-					if (ImGui::Button("Hide Editor"))
+					if (ImGui::Button(u8"ซ่อนตัวแก้ไข"))
 					{
 						show_player_editor = false;
 						show_new_player    = true;
@@ -203,9 +203,9 @@ namespace YimMenu::Submenus
 			{
 				ImGui::PushID(2);
 				ImGui::NewLine();
-				ImGui::InputText("Player Name", new_player_name_buf, sizeof(new_player_name_buf));
+				ImGui::InputText(u8"ชื่อผู้เล่น", new_player_name_buf, sizeof(new_player_name_buf));
 				ImGui::InputScalar("RID", ImGuiDataType_U64, &new_player_rid);
-				if (ImGui::Button("Add"))
+				if (ImGui::Button(u8"เพิ่ม"))
 				{
 					current_player = g_PlayerDatabase->GetOrCreatePlayer(new_player_rid, new_player_name_buf);
 					memset(new_player_name_buf, 0, sizeof(new_player_name_buf));
@@ -216,21 +216,21 @@ namespace YimMenu::Submenus
 
 		static std::string nameBuf, colorBuf = "";
 		static const char* iconBuf = "";
-		auto infoSpoofingGroup    = std::make_shared<Group>("Info Spoofing");
-		auto blipSpoofingGroup    = std::make_shared<Group>("Blip Spoofing");
-		auto sessionSpoofingGroup = std::make_shared<Group>("Session Spoofing");
+		auto infoSpoofingGroup    = std::make_shared<Group>(u8"ปลอมแปลงข้อมูล");
+		auto blipSpoofingGroup    = std::make_shared<Group>(u8"ปลอมแปลง Blip");
+		auto sessionSpoofingGroup = std::make_shared<Group>(u8"ปลอมแปลงเซสชั่น");
 
 		infoSpoofingGroup->AddItem(std::make_shared<ImGuiItem>([=] {
 			static std::map<std::string, std::string> colors = {{"", "None"}, {"~e~", "Red"}, {"~f~", "Off White"}, {"~p~", "White"}, {"~o~", "Yellow"}, {"~q~", "Pure White"}, {"~d~", "Orange"}, {"~m~", "Light Grey"}, {"~t~", "Grey"}, {"~v~", "Black"}, {"~pa~", "Blue"}, {"~t1~", "Purple"}, {"~t2~", "Orange"}, {"~t3~", "Teal"}, {"~t4~", "Light Yellow"}, {"~t5~", "Pink"}, {"~t6~", "Green"}, {"~t7~", "Dark Blue"}};
 			static std::map<const char*, std::string> icons = {{"", "None"}, {(const char*)u8"\u2211", "Rockstar Icon"}};
-			ImGui::Text("Spoofed data will not appear locally, and will only be visible when joining a new session,\n or when a player joins you");
+			ImGui::Text(u8"ข้อมูลที่ปลอมแปลงจะไม่แสดงในเครื่องของคุณ จะเห็นได้เฉพาะเมื่อเข้าห้องใหม่\nหรือเมื่อมีคนอื่นเข้ามาหาคุณ");
 
-			ImGui::Text("Name");
-			ImGui::Checkbox("Spoof Name", &g_SpoofingStorage.spoofName);
+			ImGui::Text(u8"ชื่อ");
+			ImGui::Checkbox(u8"ปลอมชื่อ", &g_SpoofingStorage.spoofName);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Spoof your name");
 
-			if (ImGui::BeginCombo("Color Prefix", colors[colorBuf].c_str()))
+			if (ImGui::BeginCombo(u8"สีนำหน้า", colors[colorBuf].c_str()))
 			{
 				for (auto& [code, translation] : colors)
 				{
@@ -242,7 +242,7 @@ namespace YimMenu::Submenus
 				ImGui::EndCombo();
 			}
 
-			if (ImGui::BeginCombo("Icon Prefix", icons[iconBuf].c_str()))
+			if (ImGui::BeginCombo(u8"ไอคอนนำหน้า", icons[iconBuf].c_str()))
 			{
 				for (auto& [icon, translation] : icons)
 				{
@@ -254,8 +254,8 @@ namespace YimMenu::Submenus
 				ImGui::EndCombo();
 			}
 
-			InputTextWithHint("Spoofed Name", "Enter spoofed name", &nameBuf).Draw();
-			if (ImGui::Button("Set Spoofed Name"))
+			InputTextWithHint(u8"ชื่อที่ปลอม", u8"กรอกชื่อที่ต้องการ", &nameBuf).Draw();
+			if (ImGui::Button(u8"ตั้งชื่อปลอม"))
 			{
 				std::string concatName        = std::string(colorBuf) + std::string(iconBuf) + nameBuf;
 				g_SpoofingStorage.spoofedName = concatName;
@@ -263,32 +263,32 @@ namespace YimMenu::Submenus
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Update your spoofed name");
 
-			ImGui::Text("IP Address");
-			ImGui::Checkbox("Spoof IP", &g_SpoofingStorage.spoofIP);
+			ImGui::Text(u8"ที่อยู่ IP");
+			ImGui::Checkbox(u8"ปลอม IP", &g_SpoofingStorage.spoofIP);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Spoof your IP");
 
 			ImGui::DragInt4("##ip_fields", g_SpoofingStorage.spoofedIP.data(), 0, 255);
 
 			ImGui::Text("Rockstar ID");
-			ImGui::Checkbox("Spoof RID", &g_SpoofingStorage.spoofRID);
+			ImGui::Checkbox(u8"ปลอม RID", &g_SpoofingStorage.spoofRID);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Spoof your Rockstar ID");
 
 			ImGui::InputScalar("##rockstar_id_input", ImGuiDataType_U64, &g_SpoofingStorage.spoofedRID);
 		}));
 
-		blipSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofblip"_J));
-		blipSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofblip"_J, std::make_shared<ListCommandItem>("blipsprite"_J, "Blip")));
-		blipSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofprimaryicon"_J));
-		blipSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofprimaryicon"_J, std::make_shared<ListCommandItem>("primaryicon"_J, "Icon##primary")));
-		blipSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofsecondaryicon"_J));
-		blipSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofsecondaryicon"_J, std::make_shared<ListCommandItem>("secondaryicon"_J, "Icon##secondary")));
+		blipSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofblip"_J, u8"ปลอม Blip"));
+		blipSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofblip"_J, std::make_shared<ListCommandItem>("blipsprite"_J, u8"รูป Blip")));
+		blipSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofprimaryicon"_J, u8"ปลอมไอคอนหลัก"));
+		blipSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofprimaryicon"_J, std::make_shared<ListCommandItem>("primaryicon"_J, u8"ไอคอนหลัก")));
+		blipSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofsecondaryicon"_J, u8"ปลอมไอคอนรอง"));
+		blipSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofsecondaryicon"_J, std::make_shared<ListCommandItem>("secondaryicon"_J, u8"ไอคอนรอง")));
 
 		auto discriminatorGroup = std::make_shared<Group>("", 1);
-		sessionSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofdiscriminator"_J));
-		discriminatorGroup->AddItem(std::make_shared<IntCommandItem>("discriminator"_J));
-		discriminatorGroup->AddItem(std::make_shared<CommandItem>("copydiscriminator"_J, "Copy Current"));
+		sessionSpoofingGroup->AddItem(std::make_shared<BoolCommandItem>("spoofdiscriminator"_J, u8"ปลอม Discriminator"));
+		discriminatorGroup->AddItem(std::make_shared<IntCommandItem>("discriminator"_J, "Discriminator"));
+		discriminatorGroup->AddItem(std::make_shared<CommandItem>("copydiscriminator"_J, u8"คัดลอกปัจจุบัน"));
 		sessionSpoofingGroup->AddItem(std::make_shared<ConditionalItem>("spoofdiscriminator"_J, std::move(discriminatorGroup)));
 
 		spoofing->AddItem(infoSpoofingGroup);

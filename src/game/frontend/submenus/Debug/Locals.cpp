@@ -36,7 +36,7 @@ namespace YimMenu::Submenus
 
 	std::shared_ptr<Category> BuildLocalsMenu()
 	{
-		auto locals = std::make_unique<Category>("Locals");
+		auto locals = std::make_unique<Category>(u8"ตัวแปร Local");
 
 		static bool ensure_vars_loaded = ([] {
 			SavedVariables::Init();
@@ -51,19 +51,19 @@ namespace YimMenu::Submenus
 		static const char* cur_script_name = nullptr;
 		static std::uint32_t cur_script_hash = 0;
 
-		auto script = std::make_unique<Group>("Script");
+		auto script = std::make_unique<Group>(u8"สคริปต์");
 
 		script->AddItem(std::make_unique<ImGuiItem>([] {
 			// TODO: pointless code reduplication
 			if (!Pointers.ScriptThreads || Pointers.ScriptThreads->size() == 0)
 			{
 				cur_thread = nullptr;
-				ImGui::TextDisabled("None");
+				ImGui::TextDisabled(u8"ไม่มี");
 				return;
 			}
 
 			ImGui::SetNextItemWidth(225.0f);
-			if (ImGui::BeginCombo("Thread", cur_thread ? cur_script_name : "(Select)"))
+			if (ImGui::BeginCombo(u8"เธรด", cur_thread ? cur_script_name : u8"(เลือก)"))
 			{
 				for (auto script : *Pointers.ScriptThreads)
 				{
@@ -100,11 +100,11 @@ namespace YimMenu::Submenus
 				return;
 		}));
 
-		auto editor = std::make_unique<Group>("Editor");
+		auto editor = std::make_unique<Group>(u8"ตัวแก้ไข");
 		editor->AddItem(std::make_unique<ImGuiItem>([] {
 			if (!cur_thread)
 			{
-				ImGui::TextDisabled("Invalid");
+				ImGui::TextDisabled(u8"ไม่ถูกต้อง");
 				return;
 			}
 
@@ -112,11 +112,11 @@ namespace YimMenu::Submenus
 			DrawSavedVariableEdit(cur_local, cur_local.Read(cur_thread));
 		}));
 
-		auto saved = std::make_unique<Group>("Saved");
+		auto saved = std::make_unique<Group>(u8"ที่บันทึกไว้");
 		saved->AddItem(std::make_unique<ImGuiItem>([] {
 			if (!cur_thread)
 			{
-				ImGui::TextDisabled("Invalid");
+				ImGui::TextDisabled(u8"ไม่ถูกต้อง");
 				return;
 			}
 
@@ -162,13 +162,13 @@ namespace YimMenu::Submenus
 			ImGui::SetNextItemWidth(200.f);
 			ImGui::InputText("##local_name", local_name, sizeof(local_name));
 			ImGui::SameLine();
-			if (ImGui::Button("Save"))
+			if (ImGui::Button(u8"บันทึก"))
 			{
 				cur_local.name = local_name;
 				SaveLocal(cur_local);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Delete"))
+			if (ImGui::Button(u8"ลบ"))
 			{
 				cur_local.name = local_name;
 				DeleteLocal(cur_local);

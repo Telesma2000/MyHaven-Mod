@@ -8,6 +8,11 @@ project(Terminus VERSION 0.0.1 DESCRIPTION "Terminus, a beta-stage mod menu for 
 include(FetchContent)
 message(STATUS "Setting up minhook (Manual Build Mode)")
 
+# ปิด Warning ของ FetchContent (CMP0169)
+if(POLICY CMP0169)
+  cmake_policy(SET CMP0169 OLD)
+endif()
+
 FetchContent_Declare(
     minhook
     GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
@@ -33,12 +38,11 @@ if(NOT minhook_POPULATED)
 endif()
 # --------------------------------------------------------------------------
 
-# libs อื่นๆ (คงเดิมไว้)
+# libs อื่นๆ
 include(cmake/vulkan.cmake)
 include(cmake/async-logger.cmake)
 include(cmake/imgui.cmake)
 include(cmake/json.cmake)
-# include(cmake/minhook.cmake)  <-- ลบบรรทัดนี้ออกไปแล้ว เพราะเราทำข้างบนแทน
 include(cmake/rdr-classes.cmake)
 
 
@@ -53,6 +57,18 @@ set(DEPS_DIR "${PROJECT_SOURCE_DIR}/deps")
 add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
 
+# =============================================================================
+# จุดแก้ไขสำคัญ: สั่งปิด char8_t และเปิด UTF-8 ตรงนี้ (ก่อน target_link_libraries)
+# =============================================================================
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /Zc:char8_t- /utf-8)
+    
+    # เพิ่ม Optimization flags
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG /OPT:REF,ICF /GUARD:NO")
+    string(REPLACE "/Ob1" "/Ob3" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+endif()
+# =============================================================================
+
 target_precompile_headers(${PROJECT_NAME} PUBLIC "${SRC_DIR}/common.hpp")
 
 message(STATUS "Setting up include directories.")
@@ -66,13 +82,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 message(STATUS "Setting up linked libraries")
-# CMake จะเจอ Target 'minhook' ที่เราสร้างข้างบนแล้ว และจะไม่ฟ้องหา .lib อีก
-# FIX: Added 'dxgi' to the end of the list to fix LNK2001
 target_link_libraries(${PROJECT_NAME} PRIVATE AsyncLogger imgui minhook nlohmann_json::nlohmann_json dbghelp RDR-Classes "${DEPS_DIR}/vulkan-1.lib" dxgi)
 
 add_compile_definitions("_CRT_SECURE_NO_WARNINGS" "NOMINMAX" "WIN32_LEAN_AND_MEAN")
-
-if(MSVC)
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG /OPT:REF,ICF /GUARD:NO")
-    string(REPLACE "/Ob1" "/Ob3" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
-endif()

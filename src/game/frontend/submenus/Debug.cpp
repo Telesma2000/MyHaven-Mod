@@ -26,7 +26,7 @@ namespace YimMenu::Submenus
 		AddCategory(BuildLocalsMenu());
 		AddCategory(BuildScriptsMenu());
 
-		auto debug = std::make_shared<Category>("Logging/Misc");
+		auto debug = std::make_shared<Category>(u8"บันทึก/อื่นๆ");
 
 		debug->AddItem(std::make_shared<BoolCommandItem>("logclones"_J));
 		debug->AddItem(std::make_shared<BoolCommandItem>("logoutgoingclones"_J));
@@ -47,7 +47,7 @@ namespace YimMenu::Submenus
 		debug->AddItem(std::make_shared<CommandItem>("chathelper"_J));
 		debug->AddItem(std::make_shared<CommandItem>("clearchat"_J));
 		debug->AddItem(std::make_shared<ImGuiItem>([] {
-			if (ImGui::Button("Bail to Loading Screen"))
+			if (ImGui::Button(u8"กลับไปหน้าโหลดเกม"))
 			{
 				FiberPool::Push([] {
 					SCRIPTS::BAIL_TO_LANDING_PAGE(0);
@@ -55,16 +55,16 @@ namespace YimMenu::Submenus
 			}
 
 			static char object_model[255]{};
-			ImGui::InputText("Object Model", object_model, sizeof(object_model));
-			if (ImGui::Button("Create"))
+			ImGui::InputText(u8"โมเดลวัตถุ", object_model, sizeof(object_model));
+			if (ImGui::Button(u8"สร้าง"))
 			{
 				FiberPool::Push([] {
 					Object::Create(Joaat(object_model), Self::GetPed().GetPosition());
 				});
 			}
 			static char music_event[255]{};
-			ImGui::InputText("Music", music_event, sizeof(music_event));
-			if (ImGui::Button("Play"))
+			ImGui::InputText(u8"ดนตรี", music_event, sizeof(music_event));
+			if (ImGui::Button(u8"เล่น"))
 			{
 				FiberPool::Push([] {
 					AUDIO::PREPARE_MUSIC_EVENT(music_event);
@@ -72,15 +72,15 @@ namespace YimMenu::Submenus
 				});
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Stop"))
+			if (ImGui::Button(u8"หยุด"))
 			{
 				FiberPool::Push([] {
 					AUDIO::TRIGGER_MUSIC_EVENT("MC_MUSIC_STOP");
 				});
 			}
 			static int mflag = 0;
-			ImGui::InputInt("MotivationState", &mflag);
-			if (ImGui::Button("Override"))
+			ImGui::InputInt(u8"สถานะแรงจูงใจ", &mflag);
+			if (ImGui::Button(u8"ทับค่า"))
 			{
 				FiberPool::Push([] {
 					Self::GetPed().SetMotivation(static_cast<MotivationState>(mflag), 99999.0f);
@@ -88,7 +88,7 @@ namespace YimMenu::Submenus
 				});
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Stop"))
+			if (ImGui::Button(u8"หยุด"))
 			{
 				FiberPool::Push([] {
 					Self::GetPed().SetMotivation(static_cast<MotivationState>(mflag), 0.0f);

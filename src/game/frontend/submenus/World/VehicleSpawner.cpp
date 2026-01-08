@@ -55,10 +55,10 @@ namespace YimMenu::Submenus
 	{
 		ImGui::PushID("vehicles"_J);
 		static std::string vehModelBuffer;
-		InputTextWithHint("##vehmodel", "Vehicle Model", &vehModelBuffer, ImGuiInputTextFlags_CallbackCompletion, nullptr, VehSpawnerInputCallback)
+		InputTextWithHint("##vehmodel", u8"ชื่อโมเดลรถ", &vehModelBuffer, ImGuiInputTextFlags_CallbackCompletion, nullptr, VehSpawnerInputCallback)
 		    .Draw();
 		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Press Tab to auto fill");
+			ImGui::SetTooltip(u8"กด Tab เพื่อเติมคำอัตโนมัติ");
 		if (!vehModelBuffer.empty() && !IsVehModelInList(vehModelBuffer))
 		{
 			ImGui::BeginListBox("##vehmodels", ImVec2(250, 100));
@@ -78,7 +78,7 @@ namespace YimMenu::Submenus
 			ImGui::EndListBox();
 		}
 
-		if (ImGui::Button("Spawn"))
+		if (ImGui::Button(u8"เสก"))
 		{
 			FiberPool::Push([=] {
 				auto coords    = Self::GetPed().GetPosition();
