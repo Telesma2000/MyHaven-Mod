@@ -37,7 +37,9 @@ namespace YimMenu::Features
 	BoolCommand _BlockPtfx("blockptfx", "Block PTFX", "Blocks all particle effect events", true);
 	BoolCommand _BlockClearTasks("blockclearpedtasks", "Block Clear Tasks", "Blocks all clear ped tasks events", true);
 	BoolCommand _BlockScriptCommand("blockscriptcommand", "Block Remote Native Calls", "Blocks all remote native call events", true);
-	BoolCommand _BlockEventFlooding("blockeventflooding", "Block Event Flooding", "Protects against event flood crash attacks", true);
+	
+	// FIX: Use extern instead of re-defining to fix LNK2005 error
+	extern BoolCommand _BlockEventFlooding;
 }
 
 namespace YimMenu::Hooks

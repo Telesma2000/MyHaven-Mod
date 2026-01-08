@@ -111,6 +111,17 @@ namespace YimMenu::Submenus
 		auto pedSpawnerGroup     = std::make_shared<Group>("Ped Spawner");
 		auto vehicleSpawnerGroup = std::make_shared<Group>("Vehicle Spawner");
 		auto trainSpawnerGroup   = std::make_shared<Group>("Train Spawner");
+		auto buildModeGroup      = std::make_shared<Group>("Build Mode (Sims Style)"); // Added Group
+
+		// Build Mode Integration
+		buildModeGroup->AddItem(std::make_shared<BoolCommandItem>("buildmodeactive"_J));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<BoolCommandItem>("buildmodecamera"_J)));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<ListCommandItem>("buildcategory"_J)));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<CommandItem>("spawnbuildobject"_J)));
+		buildModeGroup->AddItem(std::make_shared<ConditionalItem>("buildmodeactive"_J, std::make_shared<CommandItem>("clearallobjects"_J)));
+		buildModeGroup->AddItem(std::make_shared<ImGuiItem>([] {
+			ImGui::TextWrapped("Build your own camp! Use WASD to move camera, arrow keys to rotate objects.");
+		}));
 
 		pedSpawnerGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			RenderPedSpawnerMenu();
@@ -124,6 +135,7 @@ namespace YimMenu::Submenus
 			RenderTrainsMenu();
 		}));
 
+		spawners->AddItem(buildModeGroup); // Add Build Mode
 		spawners->AddItem(pedSpawnerGroup);
 		spawners->AddItem(vehicleSpawnerGroup);
 		spawners->AddItem(trainSpawnerGroup);

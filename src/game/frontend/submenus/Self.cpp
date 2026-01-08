@@ -19,6 +19,8 @@
 namespace YimMenu::Features
 {
 	BoolCommand _RecoveryEnabled("recoveryenabled", "Recovery Enabled", "Is the recovery feature enabled");
+	// เพิ่มบรรทัดนี้เพื่อประกาศฟังก์ชันให้ Linker รู้จัก
+	std::string& GetChatBubbleText();
 }
 
 namespace YimMenu::Submenus
@@ -129,6 +131,7 @@ namespace YimMenu::Submenus
 		auto movementGroup = std::make_shared<Group>("Movement");
 		auto toolsGroup    = std::make_shared<Group>("Tools");
 		auto customGroup   = std::make_shared<Group>("Customization");
+		auto teleportGroup = std::make_shared<Group>("Teleport"); // New group for TP features
 
 		globalsGroup->AddItem(std::make_shared<BoolCommandItem>("godmode"_J));
 		globalsGroup->AddItem(std::make_shared<BoolCommandItem>("neverwanted"_J));
@@ -151,13 +154,20 @@ namespace YimMenu::Submenus
 		globalsGroup->AddItem(std::make_shared<BoolCommandItem>("drunk"_J));
 		globalsGroup->AddItem(std::make_shared<BoolCommandItem>("superpunch"_J));
 		globalsGroup->AddItem(std::make_shared<BoolCommandItem>("quickskin"_J));
+		globalsGroup->AddItem(std::make_shared<BoolCommandItem>("fastmoonshine"_J)); // Added feature
+
+		// Teleport Features
+		teleportGroup->AddItem(std::make_shared<CommandItem>("tptocamp"_J));
+		teleportGroup->AddItem(std::make_shared<CommandItem>("tptomoonshineshack"_J)); // Need to ensure command name matches
+		teleportGroup->AddItem(std::make_shared<CommandItem>("tptomadamnazar"_J));
+		teleportGroup->AddItem(std::make_shared<CommandItem>("tptotraintrack"_J));
+		teleportGroup->AddItem(std::make_shared<CommandItem>("tptomount"_J));
+		teleportGroup->AddItem(std::make_shared<BoolCommandItem>("autotp"_J)); // Added AutoTP
 
 		toolsGroup->AddItem(std::make_shared<CommandItem>("suicide"_J));
 		toolsGroup->AddItem(std::make_shared<CommandItem>("clearcrimes"_J));
-
 		toolsGroup->AddItem(std::make_shared<BoolCommandItem>("npcignore"_J));
 		toolsGroup->AddItem(std::make_shared<BoolCommandItem>("eagleeye"_J));
-
 		toolsGroup->AddItem(std::make_shared<BoolCommandItem>("overridewhistle"_J));
 		toolsGroup->AddItem(std::make_shared<ConditionalItem>("overridewhistle"_J, std::make_shared<FloatCommandItem>("whistlepitch"_J, "Pitch")));
 		toolsGroup->AddItem(std::make_shared<ConditionalItem>("overridewhistle"_J, std::make_shared<FloatCommandItem>("whistleclarity"_J, "Clarity")));
@@ -181,7 +191,6 @@ namespace YimMenu::Submenus
 		movementGroup->AddItem(std::make_shared<BoolCommandItem>("freecam"_J));
 		movementGroup->AddItem(std::make_shared<ConditionalItem>("freecam"_J, std::make_shared<FloatCommandItem>("freecamspeed"_J)));
 
-		// Creative player customization
 		customGroup->AddItem(std::make_shared<BoolCommandItem>("glowingplayer"_J));
 		customGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			ImGui::TextWrapped("Make yourself glow with a warm golden light!");
@@ -189,12 +198,14 @@ namespace YimMenu::Submenus
 
 		main->AddItem(globalsGroup);
 		main->AddItem(toolsGroup);
+		main->AddItem(teleportGroup); // Add the new group
 		main->AddItem(movementGroup);
 		main->AddItem(customGroup);
 		AddCategory(std::move(main));
 
 		auto weapons             = std::make_shared<Category>("Weapons");
 		auto weaponsGlobalsGroup = std::make_shared<Group>("Globals");
+		auto weaponsGiveGroup    = std::make_shared<Group>("Give Weapons"); // New Group
 
 		weaponsGlobalsGroup->AddItem(std::make_shared<BoolCommandItem>("infiniteammo"_J));
 		weaponsGlobalsGroup->AddItem(std::make_shared<BoolCommandItem>("infiniteclip"_J));
@@ -202,7 +213,12 @@ namespace YimMenu::Submenus
 		weaponsGlobalsGroup->AddItem(std::make_shared<BoolCommandItem>("autocock"_J));
 		weaponsGlobalsGroup->AddItem(std::make_shared<BoolCommandItem>("keepgunsclean"_J));
 
+		// Give Weapons features
+		weaponsGiveGroup->AddItem(std::make_shared<CommandItem>("giveallweapons"_J));
+		weaponsGiveGroup->AddItem(std::make_shared<CommandItem>("giveallammo"_J)); // Need to ensure command name matches
+
 		weapons->AddItem(weaponsGlobalsGroup);
+		weapons->AddItem(weaponsGiveGroup);
 		AddCategory(std::move(weapons));
 
 		auto horse             = std::make_shared<Category>("Horse");
@@ -229,7 +245,6 @@ namespace YimMenu::Submenus
 				});
 		}));
 
-		// Creative customization features
 		horseCustomGroup->AddItem(std::make_shared<BoolCommandItem>("rainbowhorse"_J));
 		horseCustomGroup->AddItem(std::make_shared<IntCommandItem>("customhorsecolor"_J));
 		horseCustomGroup->AddItem(std::make_shared<ImGuiItem>([] {
@@ -255,7 +270,6 @@ namespace YimMenu::Submenus
 		vehicleFunGroup->AddItem(std::make_shared<ConditionalItem>("superdrive"_J, std::make_shared<IntCommandItem>("superdriveforce"_J, "Force")));
 		vehicleFunGroup->AddItem(std::make_shared<BoolCommandItem>("superbrake"_J));
 
-		// Creative customization features
 		vehicleCustomGroup->AddItem(std::make_shared<BoolCommandItem>("rainbowvehicle"_J));
 
 		vehicle->AddItem(vehicleGlobalsGroup);
@@ -264,14 +278,12 @@ namespace YimMenu::Submenus
 		AddCategory(std::move(vehicle));
 
 		auto animations = std::make_shared<Category>("Animations");
-
 		animations->AddItem(std::make_shared<ImGuiItem>([] {
 			RenderAnimationsCategory();
 		}));
-
 		AddCategory(std::move(animations));
 
-		// CREATIVE MODE - Ultimate peaceful and creative features
+		// CREATIVE MODE
 		auto creative = std::make_shared<Category>("Creative");
 		auto visualsGroup = std::make_shared<Group>("Visual Effects");
 		auto particlesGroup = std::make_shared<Group>("Particle Effects");
@@ -283,7 +295,6 @@ namespace YimMenu::Submenus
 		auto explorationGroup = std::make_shared<Group>("Exploration");
 		auto peacefulGroup = std::make_shared<Group>("Peaceful Features");
 
-		// Visual Effects & Filters
 		visualsGroup->AddItem(std::make_shared<BoolCommandItem>("visualfilterapplier"_J));
 		visualsGroup->AddItem(std::make_shared<ConditionalItem>("visualfilterapplier"_J, std::make_shared<ListCommandItem>("visualfilter"_J)));
 		visualsGroup->AddItem(std::make_shared<ImGuiItem>([] {
@@ -301,14 +312,12 @@ namespace YimMenu::Submenus
 			ImGui::TextWrapped("Cinematic mode: Add movie-style letterbox bars & hide HUD for epic screenshots!");
 		}));
 
-		// Particle Trails
 		particlesGroup->AddItem(std::make_shared<BoolCommandItem>("particletrails"_J));
 		particlesGroup->AddItem(std::make_shared<ConditionalItem>("particletrails"_J, std::make_shared<ListCommandItem>("particletrail"_J)));
 		particlesGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			ImGui::TextWrapped("Leave magical trails: Butterflies, Fireflies, Sparkles, Fire, Snow, Flower Petals & more!");
 		}));
 
-		// Player Effects
 		playerEffectsGroup->AddItem(std::make_shared<BoolCommandItem>("playerscale"_J));
 		playerEffectsGroup->AddItem(std::make_shared<ConditionalItem>("playerscale"_J, std::make_shared<FloatCommandItem>("playerscalevalue"_J)));
 		playerEffectsGroup->AddItem(std::make_shared<ImGuiItem>([] {
@@ -333,7 +342,6 @@ namespace YimMenu::Submenus
 			ImGui::TextWrapped("Create an army of yourself! Spawn 1-20 clones that follow you everywhere!");
 		}));
 
-		// World Control
 		worldGroup->AddItem(std::make_shared<BoolCommandItem>("slowmotion"_J));
 		worldGroup->AddItem(std::make_shared<ConditionalItem>("slowmotion"_J, std::make_shared<FloatCommandItem>("slowmotionspeed"_J)));
 		worldGroup->AddItem(std::make_shared<ImGuiItem>([] {
@@ -359,28 +367,24 @@ namespace YimMenu::Submenus
 			ImGui::TextWrapped("Launch fireworks! Single burst, multi-shot, rainbow, fountain, or heart shape - celebrate in style!");
 		}));
 
-		// Companion Animals
 		companionsGroup->AddItem(std::make_shared<ListCommandItem>("companiontype"_J));
 		companionsGroup->AddItem(std::make_shared<CommandItem>("spawncompanion"_J));
 		companionsGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			ImGui::TextWrapped("Spawn friendly animal companions: Dog, Wolf, Bear, Eagle, Deer & more! They'll follow you everywhere!");
 		}));
 
-		// Flying Machines
 		vehiclesGroup->AddItem(std::make_shared<ListCommandItem>("flyingmachinetype"_J));
 		vehiclesGroup->AddItem(std::make_shared<CommandItem>("spawnflyingmachine"_J));
 		vehiclesGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			ImGui::TextWrapped("Fly airships, planes, UFOs, hot air balloons & more! Explore the skies!");
 		}));
 
-		// Ridable Animals
 		ridablesGroup->AddItem(std::make_shared<ListCommandItem>("ridableanimaltype"_J));
 		ridablesGroup->AddItem(std::make_shared<CommandItem>("spawnridableanimal"_J));
 		ridablesGroup->AddItem(std::make_shared<ImGuiItem>([] {
 			ImGui::TextWrapped("Ride eagles through the sky, lions across the plains, bears through forests!");
 		}));
 
-		// Exploration
 		explorationGroup->AddItem(std::make_shared<ListCommandItem>("playermodeltype"_J));
 		explorationGroup->AddItem(std::make_shared<CommandItem>("changeplayermodel"_J));
 		explorationGroup->AddItem(std::make_shared<ImGuiItem>([] {
@@ -401,7 +405,6 @@ namespace YimMenu::Submenus
 			ImGui::TextWrapped("Visit restricted areas: Guarma island, Sisika prison, & more!");
 		}));
 
-		// Peaceful Features
 		peacefulGroup->AddItem(std::make_shared<BoolCommandItem>("antibounty"_J));
 		peacefulGroup->AddItem(std::make_shared<BoolCommandItem>("autoremovebounty"_J));
 		peacefulGroup->AddItem(std::make_shared<BoolCommandItem>("autopaybounty"_J));
@@ -419,9 +422,7 @@ namespace YimMenu::Submenus
 			ImGui::InputText("Chat Message", chatText, sizeof(chatText));
 			if (ImGui::Button("Update Chat Bubble"))
 			{
-				// Will set the text - need to expose the setter function
-				extern std::string& GetChatBubbleText();
-				GetChatBubbleText() = chatText;
+				YimMenu::Features::GetChatBubbleText() = chatText;
 			}
 			ImGui::TextWrapped("Type a message to display above your head! Perfect for peaceful communication!");
 		}));

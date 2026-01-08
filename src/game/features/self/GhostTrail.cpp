@@ -77,7 +77,8 @@ namespace YimMenu::Features
 				{
 					if (ENTITY::DOES_ENTITY_EXIST(it->ped.GetHandle()))
 					{
-						PED::DELETE_PED(it->ped.GetHandle());
+						auto handle = it->ped.GetHandle();
+						PED::DELETE_PED(&handle);
 					}
 					it = g_GhostClones.erase(it);
 				}
@@ -95,7 +96,8 @@ namespace YimMenu::Features
 			{
 				if (ENTITY::DOES_ENTITY_EXIST(ghost.ped.GetHandle()))
 				{
-					PED::DELETE_PED(ghost.ped.GetHandle());
+					auto handle = ghost.ped.GetHandle();
+					PED::DELETE_PED(&handle);
 				}
 			}
 			g_GhostClones.clear();

@@ -2,12 +2,43 @@ cmake_minimum_required(VERSION 3.20.x)
 
 project(Terminus VERSION 0.0.1 DESCRIPTION "Terminus, a beta-stage mod menu for Red Dead Redemption 2 and Red Dead Online, inspired by YimMenu, that protects against crashes and enhances your experience.")
 
-# libs
+# --------------------------------------------------------------------------
+# ส่วนที่แก้ไข: สร้าง MinHook ขึ้นมาเองโดยตรง (ไม่ต้องใช้ include ไฟล์อื่น)
+# --------------------------------------------------------------------------
+include(FetchContent)
+message(STATUS "Setting up minhook (Manual Build Mode)")
+
+FetchContent_Declare(
+    minhook
+    GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
+    GIT_TAG        v1.3.3
+    GIT_PROGRESS TRUE
+)
+
+FetchContent_GetProperties(minhook)
+if(NOT minhook_POPULATED)
+    FetchContent_Populate(minhook)
+    
+    # สร้าง Library ชื่อ minhook และระบุไฟล์ที่ต้องใช้
+    add_library(minhook STATIC
+        "${minhook_SOURCE_DIR}/src/buffer.c"
+        "${minhook_SOURCE_DIR}/src/hook.c"
+        "${minhook_SOURCE_DIR}/src/trampoline.c"
+        "${minhook_SOURCE_DIR}/src/hde/hde32.c"
+        "${minhook_SOURCE_DIR}/src/hde/hde64.c"
+    )
+    
+    # บอกให้โปรแกรมรู้ว่าไฟล์ Header ของ minhook อยู่ที่ไหน
+    target_include_directories(minhook PUBLIC "${minhook_SOURCE_DIR}/include")
+endif()
+# --------------------------------------------------------------------------
+
+# libs อื่นๆ (คงเดิมไว้)
 include(cmake/vulkan.cmake)
 include(cmake/async-logger.cmake)
 include(cmake/imgui.cmake)
 include(cmake/json.cmake)
-include(cmake/minhook.cmake)
+# include(cmake/minhook.cmake)  <-- ลบบรรทัดนี้ออกไปแล้ว เพราะเราทำข้างบนแทน
 include(cmake/rdr-classes.cmake)
 
 
@@ -35,7 +66,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 message(STATUS "Setting up linked libraries")
-target_link_libraries(${PROJECT_NAME} PRIVATE AsyncLogger imgui minhook nlohmann_json::nlohmann_json dbghelp RDR-Classes "${DEPS_DIR}/vulkan-1.lib")
+# CMake จะเจอ Target 'minhook' ที่เราสร้างข้างบนแล้ว และจะไม่ฟ้องหา .lib อีก
+# FIX: Added 'dxgi' to the end of the list to fix LNK2001
+target_link_libraries(${PROJECT_NAME} PRIVATE AsyncLogger imgui minhook nlohmann_json::nlohmann_json dbghelp RDR-Classes "${DEPS_DIR}/vulkan-1.lib" dxgi)
 
 add_compile_definitions("_CRT_SECURE_NO_WARNINGS" "NOMINMAX" "WIN32_LEAN_AND_MEAN")
 

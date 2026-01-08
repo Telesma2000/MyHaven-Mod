@@ -6,6 +6,7 @@
 #include "core/frontend/Notifications.hpp"
 #include "game/backend/ScriptMgr.hpp"
 #include <cmath>
+#include <chrono>
 
 namespace YimMenu::Features
 {
@@ -78,7 +79,7 @@ namespace YimMenu::Features
 						rage::fvector3 burstPos = pos;
 						burstPos.x += (i - 2) * 10.0f;
 						SpawnFireworkBurst(burstPos, 255, (i * 50), (255 - i * 50));
-						ScriptMgr::Yield(10);
+						ScriptMgr::Yield(std::chrono::milliseconds(10));
 					}
 					break;
 
@@ -89,11 +90,12 @@ namespace YimMenu::Features
 						rage::fvector3 fountainPos = pos;
 						fountainPos.z += i * 3.0f;
 						SpawnFireworkBurst(fountainPos, 255, 215, 0); // Gold
-						ScriptMgr::Yield(5);
+						ScriptMgr::Yield(std::chrono::milliseconds(5));
 					}
 					break;
 
 				case FireworkType::RAINBOW_BURST:
+				{
 					// Rainbow colored bursts
 					int colors[][3] = {{255,0,0}, {255,127,0}, {255,255,0}, {0,255,0}, {0,0,255}, {75,0,130}, {148,0,211}};
 					for (int i = 0; i < 7; i++)
@@ -103,9 +105,10 @@ namespace YimMenu::Features
 						rainbowPos.x += cos(angle) * 10.0f;
 						rainbowPos.y += sin(angle) * 10.0f;
 						SpawnFireworkBurst(rainbowPos, colors[i][0], colors[i][1], colors[i][2]);
-						ScriptMgr::Yield(5);
+						ScriptMgr::Yield(std::chrono::milliseconds(5));
 					}
 					break;
+				}
 
 				case FireworkType::HEART_SHAPE:
 					// Heart shape pattern
@@ -119,7 +122,7 @@ namespace YimMenu::Features
 						heartPos.x += x;
 						heartPos.y += y;
 						SpawnFireworkBurst(heartPos, 255, 20, 147); // Pink
-						ScriptMgr::Yield(3);
+						ScriptMgr::Yield(std::chrono::milliseconds(3));
 					}
 					break;
 				}

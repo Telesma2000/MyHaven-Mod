@@ -120,12 +120,17 @@ namespace YimMenu::Submenus
 			}
 		}));
 
-		// Unlock features for clothing and outlaw pass items
+		// Unlock features
+		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockeverything"_J, "UNLOCK EVERYTHING")); // The big button
 		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockallclothing"_J));
 		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockoutlawpass"_J));
+		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockemotes"_J));
+		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockhorses"_J));
+		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockweapons"_J));
+		unlocksGroup->AddItem(std::make_shared<CommandItem>("unlockcamps"_J));
+		
 		unlocksGroup->AddItem(std::make_shared<ImGuiItem>([] {
-			ImGui::TextWrapped("These unlocks give you access to story mode clothing and past outlaw pass items.");
-			ImGui::TextWrapped("Check your wardrobe and catalog after using!");
+			ImGui::TextWrapped("WARNING: 'Unlock Everything' will unlock all clothing, emotes, horses, weapons, and camp items at once. This cannot be undone!");
 		}));
 
 		recoveryOptions->AddItem(std::make_shared<BoolCommandItem>("unlimiteditems"_J));

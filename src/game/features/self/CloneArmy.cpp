@@ -28,7 +28,8 @@ namespace YimMenu::Features
 				{
 					if (ENTITY::DOES_ENTITY_EXIST(clone.GetHandle()))
 					{
-						PED::DELETE_PED(clone.GetHandle());
+						auto handle = clone.GetHandle();
+						PED::DELETE_PED(&handle);
 					}
 				}
 				g_Clones.clear();
@@ -59,10 +60,13 @@ namespace YimMenu::Features
 
 					if (clone.IsValid())
 					{
-						// Make clone follow player
-						TASK::TASK_FOLLOW_TO_OFFSET_OF_ENTITY(clone.GetHandle(), player.GetHandle(),
+						// Make clone follow player - Adjusted to 14 arguments
+						TASK::TASK_FOLLOW_TO_OFFSET_OF_ENTITY(
+							clone.GetHandle(), player.GetHandle(),
 							cos(angle) * radius, sin(angle) * radius, 0.0f,
-							1.0f, -1, 2.0f, true);
+							1.0f, -1, 2.0f, 
+							true, false, false, false, false, false
+						);
 
 						// Make invincible
 						ENTITY::SET_ENTITY_INVINCIBLE(clone.GetHandle(), true);
@@ -94,7 +98,8 @@ namespace YimMenu::Features
 				{
 					if (ENTITY::DOES_ENTITY_EXIST(clone.GetHandle()))
 					{
-						PED::DELETE_PED(clone.GetHandle());
+						auto handle = clone.GetHandle();
+						PED::DELETE_PED(&handle);
 					}
 				}
 				g_Clones.clear();

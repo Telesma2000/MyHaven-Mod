@@ -43,7 +43,7 @@ namespace YimMenu::Features
 
 	struct PlacedObject
 	{
-		Object handle;
+		int handle; // Changed to int
 		Hash model;
 		rage::fvector3 position;
 		float heading;
@@ -51,7 +51,7 @@ namespace YimMenu::Features
 	};
 
 	static std::vector<PlacedObject> g_PlacedObjects;
-	static Object g_CurrentObject = 0;
+	static int g_CurrentObject = 0; // Changed to int
 	static float g_PlacementDistance = 5.0f;
 	static float g_ObjectRotation = 0.0f;
 	static float g_ObjectScale = 1.0f;
@@ -224,16 +224,15 @@ namespace YimMenu::Features
 				pos.x += g_PlacementDistance * cos(ENTITY::GET_ENTITY_HEADING(ped.GetHandle()) * (3.14159f / 180.0f));
 				pos.y += g_PlacementDistance * sin(ENTITY::GET_ENTITY_HEADING(ped.GetHandle()) * (3.14159f / 180.0f));
 
-				Object obj = OBJECT::CREATE_OBJECT(model, pos.x, pos.y, pos.z, true, true, false, false, false);
-
-				if (obj.IsValid())
+				int objHandle = OBJECT::CREATE_OBJECT(model, pos.x, pos.y, pos.z, true, true, false, false, false);
+				
+				if (ENTITY::DOES_ENTITY_EXIST(objHandle))
 				{
-					ENTITY::SET_ENTITY_HEADING(obj.GetHandle(), g_ObjectRotation);
-					// Note: RDR2 doesn't have object scaling native
-					ENTITY::FREEZE_ENTITY_POSITION(obj.GetHandle(), true);
+					ENTITY::SET_ENTITY_HEADING(objHandle, g_ObjectRotation);
+					ENTITY::FREEZE_ENTITY_POSITION(objHandle, true);
 
 					PlacedObject placed;
-					placed.handle = obj;
+					placed.handle = objHandle;
 					placed.model = model;
 					placed.position = pos;
 					placed.heading = g_ObjectRotation;
@@ -258,9 +257,10 @@ namespace YimMenu::Features
 		{
 			for (auto& obj : g_PlacedObjects)
 			{
-				if (ENTITY::DOES_ENTITY_EXIST(obj.handle.GetHandle()))
+				if (ENTITY::DOES_ENTITY_EXIST(obj.handle))
 				{
-					OBJECT::DELETE_OBJECT(obj.handle.GetHandle());
+					int handle = obj.handle;
+					OBJECT::DELETE_OBJECT(&handle);
 				}
 			}
 			g_PlacedObjects.clear();

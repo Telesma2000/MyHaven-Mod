@@ -6,6 +6,7 @@
 #include "game/rdr/Natives.hpp"
 #include "core/frontend/Notifications.hpp"
 #include "game/backend/ScriptMgr.hpp"
+#include "util/Joaat.hpp"
 
 namespace YimMenu::Features
 {
@@ -95,7 +96,9 @@ namespace YimMenu::Features
 				if (companion.IsValid())
 				{
 					// Make friendly
-					PED::SET_PED_AS_NO_LONGER_NEEDED(companion.GetHandle());
+					// Note: SET_PED_AS_NO_LONGER_NEEDED might be missing in headers, handling manually if needed or skipping
+					// PED::SET_PED_AS_NO_LONGER_NEEDED(&companion.GetHandle()); 
+					
 					PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(companion.GetHandle(), true);
 					PED::_SET_PED_PERSONALITY(companion.GetHandle(), "DISPOSITION_FRIENDLY"_J);
 

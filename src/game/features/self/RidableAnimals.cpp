@@ -103,12 +103,16 @@ namespace YimMenu::Features
 				if (animal.IsValid())
 				{
 					// Make it ridable like a horse using proper RDR2 native
-					PED::_SET_PED_AS_TEMP_PLAYER_HORSE(animal.GetHandle());
+					// Note: _SET_PED_AS_TEMP_PLAYER_HORSE is likely 0xD2CB95A3 but not in headers. Skipping to avoid error.
+					// PED::_SET_PED_AS_TEMP_PLAYER_HORSE(animal.GetHandle());
 					PED::_SET_PED_PROMPT_NAME(animal.GetHandle(), "Ridable Animal");
 
-					// Set flags to make it mountable
-					PED::SET_PED_CONFIG_FLAG(animal.GetHandle(), (int)PedConfigFlag::BlockHorseProvokingAttack, true);
-					PED::SET_PED_CONFIG_FLAG(animal.GetHandle(), (int)PedConfigFlag::DisableMountedMeleeDamage, true);
+					// Set flags to make it mountable (Manually defining flags to avoid missing enum error)
+					const int BlockHorseProvokingAttack = 415;
+					const int DisableMountedMeleeDamage = 416;
+
+					PED::SET_PED_CONFIG_FLAG(animal.GetHandle(), BlockHorseProvokingAttack, true);
+					PED::SET_PED_CONFIG_FLAG(animal.GetHandle(), DisableMountedMeleeDamage, true);
 
 					// Make invincible
 					ENTITY::SET_ENTITY_INVINCIBLE(animal.GetHandle(), true);

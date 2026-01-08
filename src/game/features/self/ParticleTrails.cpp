@@ -2,6 +2,7 @@
 #include "core/commands/LoopedCommand.hpp"
 #include "game/backend/Self.hpp"
 #include "game/rdr/Natives.hpp"
+#include "util/Joaat.hpp"
 
 namespace YimMenu::Features
 {
@@ -87,9 +88,9 @@ namespace YimMenu::Features
 			if (!effect)
 				return;
 
-			// Request and load particle asset
-			STREAMING::REQUEST_NAMED_PTFX_ASSET(asset);
-			if (STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset))
+			// Request and load particle asset (Using Hash)
+			STREAMING::REQUEST_NAMED_PTFX_ASSET(Joaat(asset));
+			if (STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(Joaat(asset)))
 			{
 				GRAPHICS::USE_PARTICLE_FX_ASSET(asset);
 
